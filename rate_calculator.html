@@ -351,24 +351,6 @@
     gap: 8px;
   }
 
-  @media (max-width: 540px) {
-    .results {
-      grid-template-columns: 1fr 1fr;
-    }
-    .res-card.accent {
-      grid-column: 1 / -1;
-    }
-    .t-head,
-    .tr {
-      grid-template-columns: 1fr 56px 80px;
-      padding-left: 12px;
-      padding-right: 12px;
-      letter-spacing: .06em;
-    }
-    .t-base { display: none; }
-    .t-head span:nth-child(3) { display: none; }
-  }
-
   .res-card {
     border-radius: var(--r);
     border: 1px solid var(--border);
@@ -431,20 +413,21 @@
 
   .t-head {
     display: grid;
-    grid-template-columns: 1fr 70px 100px 100px;
+    grid-template-columns: 1fr 64px 88px 88px;
     padding: 10px 20px;
     border-bottom: 1px solid var(--border);
     background: var(--thead-bg);
+    font-family: 'Syne', sans-serif;
     font-size: 11px;
     font-weight: 700;
-    letter-spacing: .1em;
+    letter-spacing: .07em;
     text-transform: uppercase;
     color: var(--text-dim);
   }
 
   .tr {
     display: grid;
-    grid-template-columns: 1fr 70px 100px 100px;
+    grid-template-columns: 1fr 64px 88px 88px;
     padding: 12px 20px;
     border-bottom: 1px solid var(--row-border);
     font-size: 15px;
@@ -476,14 +459,14 @@
   .tr.inactive { opacity: .22; }
 
   .t-lbl {
-    font-family: 'Syne', sans-serif;
+    font-family: 'JetBrains Mono', monospace;
     font-size: 14px;
     color: var(--text);
     padding-left: 10px;
   }
 
   .t-rate, .t-base, .t-fee {
-    font-family: 'Syne', sans-serif;
+    font-family: 'JetBrains Mono', monospace;
     font-size: 14px;
     color: var(--text-mid);
   }
@@ -573,6 +556,22 @@
     letter-spacing: .08em;
     padding-top: 4px;
   }
+  @media (max-width: 540px) {
+    .results {
+      grid-template-columns: 1fr 1fr;
+    }
+    .res-card.accent {
+      grid-column: 1 / -1;
+    }
+    .t-head,
+    .tr {
+      grid-template-columns: 1fr 64px 88px;
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+    .t-base { display: none; }
+    .t-head span:nth-child(3) { display: none; }
+  }
 </style>
 </head>
 <body class="theme-blue">
@@ -634,6 +633,7 @@
       <span style="text-align:center">Taux</span>
       <span style="text-align:right">Base</span>
       <span style="text-align:right">Honoraires</span>
+
     </div>
     <div id="bracketsContainer"></div>
   </div>
