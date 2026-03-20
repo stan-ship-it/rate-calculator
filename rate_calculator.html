@@ -650,7 +650,6 @@
     </div>
   </div>
 
-  <div class="footer" id="footer">Moonshot Growth</div>
 
 </div>
 
@@ -856,7 +855,7 @@
     gsap.set('.brand',   { opacity: 0, y: 6 });
     gsap.set(wordSpans,  { y: '100%' });
     gsap.set('.swatches',{ opacity: 0, y: 5 });
-    gsap.set(['#budgetCard','#resultsRow','#tableCard','#rateCard','#footer'],
+    gsap.set(['#budgetCard','#resultsRow','#tableCard','#rateCard'],
              { opacity: 0, y: 20 });
 
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
@@ -865,7 +864,7 @@
     tl.to(wordSpans,   { y: 0, opacity: 1, duration: 0.55, stagger: 0.08 }, 0.1);
     tl.to('.swatches', { y: 0, opacity: 1, duration: 0.3  }, 0.46);
     tl.from('.hdr',    { borderBottomColor: 'transparent', duration: 0.45 }, 0.36);
-    tl.to(['#budgetCard','#resultsRow','#tableCard','#rateCard','#footer'], {
+    tl.to(['#budgetCard','#resultsRow','#tableCard','#rateCard'], {
       y: 0, opacity: 1, duration: 0.5, stagger: 0.09
     }, 0.52);
 
