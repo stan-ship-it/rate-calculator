@@ -360,14 +360,10 @@
     }
     .t-head,
     .tr {
-      grid-template-columns: 1fr 52px 80px;
+      grid-template-columns: 1fr 56px 80px;
       padding-left: 12px;
       padding-right: 12px;
-      font-size: 12px;
       letter-spacing: .06em;
-    }
-    .t-lbl, .t-rate, .t-fee {
-      font-size: 12px;
     }
     .t-base { display: none; }
     .t-head span:nth-child(3) { display: none; }
@@ -435,20 +431,20 @@
 
   .t-head {
     display: grid;
-    grid-template-columns: 1fr 60px 88px 88px;
+    grid-template-columns: 1fr 70px 100px 100px;
     padding: 10px 20px;
     border-bottom: 1px solid var(--border);
     background: var(--thead-bg);
-    font-size: 15px;
+    font-size: 11px;
     font-weight: 700;
-    letter-spacing: .13em;
+    letter-spacing: .1em;
     text-transform: uppercase;
     color: var(--text-dim);
   }
 
   .tr {
     display: grid;
-    grid-template-columns: 1fr 60px 88px 88px;
+    grid-template-columns: 1fr 70px 100px 100px;
     padding: 12px 20px;
     border-bottom: 1px solid var(--row-border);
     font-size: 15px;
@@ -480,18 +476,20 @@
   .tr.inactive { opacity: .22; }
 
   .t-lbl {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'Syne', sans-serif;
     font-size: 14px;
     color: var(--text);
     padding-left: 10px;
   }
 
   .t-rate, .t-base, .t-fee {
-    text-align: right;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'Syne', sans-serif;
     font-size: 14px;
     color: var(--text-mid);
   }
+
+  .t-rate { text-align: center; }
+  .t-base, .t-fee { text-align: right; }
 
   .tr.active .t-rate { color: var(--accent); }
   .tr.active .t-fee  { color: var(--text); font-weight: 500; }
@@ -633,7 +631,7 @@
   <div class="card table-card" id="tableCard">
     <div class="t-head">
       <span>Tranche</span>
-      <span style="text-align:right">Taux</span>
+      <span style="text-align:center">Taux</span>
       <span style="text-align:right">Base</span>
       <span style="text-align:right">Honoraires</span>
     </div>
