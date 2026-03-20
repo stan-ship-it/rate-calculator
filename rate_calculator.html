@@ -118,9 +118,11 @@
     margin-bottom: 4px;
   }
 
+  .hdr > div { display: flex; flex-direction: column; gap: 2px; }
+
   .hdr h1 {
     font-family: 'Space Mono', monospace;
-    font-size: 28px;
+    font-size: 34px;
     font-weight: 700;
     color: var(--text);
     letter-spacing: -.01em;
@@ -129,7 +131,7 @@
 
   .hdr-sub {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
+    font-size: 14px;
     font-weight: 300;
     color: var(--text-mid);
     margin-top: 6px;
@@ -172,10 +174,10 @@
   }
 
   .brand {
-    font-size: 11px;
+    font-family: 'Space Mono', monospace;
+    font-size: 16px;
     font-weight: 700;
-    letter-spacing: .14em;
-    text-transform: uppercase;
+    letter-spacing: .04em;
     color: var(--accent);
     text-shadow: 0 0 24px rgba(var(--accent-rgb),.35);
     cursor: default;
@@ -202,7 +204,7 @@
   }
 
   .field-label {
-    font-size: 10px;
+    font-size: 13px;
     font-weight: 700;
     letter-spacing: .12em;
     text-transform: uppercase;
@@ -238,7 +240,7 @@
 
   .budget-input {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 52px;
+    font-size: 64px;
     font-weight: 400;
     color: var(--text);
     background: transparent;
@@ -255,7 +257,7 @@
 
   .budget-eur {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 30px;
+    font-size: 37px;
     font-weight: 300;
     color: var(--text-dim);
   }
@@ -313,7 +315,7 @@
     justify-content: space-between;
     margin-top: 4px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
+    font-size: 13px;
     color: var(--text-dim);
   }
 
@@ -323,7 +325,7 @@
     gap: 7px;
     margin-top: 12px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
+    font-size: 14px;
     color: var(--text-mid);
   }
 
@@ -335,7 +337,7 @@
     border: 1px solid rgba(var(--accent-rgb),.3);
     border-radius: 4px;
     padding: 2px 6px;
-    font-size: 9px;
+    font-size: 15px;
     font-weight: 700;
     letter-spacing: .07em;
   }
@@ -347,6 +349,15 @@
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 8px;
+  }
+
+  @media (max-width: 540px) {
+    .results {
+      grid-template-columns: 1fr 1fr;
+    }
+    .res-card.accent {
+      grid-column: 1 / -1;
+    }
   }
 
   .res-card {
@@ -383,7 +394,7 @@
   }
 
   .res-lbl {
-    font-size: 10px;
+    font-size: 13px;
     font-weight: 700;
     letter-spacing: .1em;
     text-transform: uppercase;
@@ -395,12 +406,12 @@
 
   .res-val {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 20px;
+    font-size: 25px;
     color: var(--text);
   }
 
   .res-card.accent .res-val {
-    font-size: 26px;
+    font-size: 32px;
     color: var(--accent);
   }
 
@@ -415,7 +426,7 @@
     padding: 10px 20px;
     border-bottom: 1px solid var(--border);
     background: var(--thead-bg);
-    font-size: 9px;
+    font-size: 15px;
     font-weight: 700;
     letter-spacing: .13em;
     text-transform: uppercase;
@@ -427,7 +438,7 @@
     grid-template-columns: 1fr 60px 88px 88px;
     padding: 12px 20px;
     border-bottom: 1px solid var(--row-border);
-    font-size: 12px;
+    font-size: 15px;
     align-items: center;
     position: relative;
     will-change: transform, opacity;
@@ -457,7 +468,7 @@
 
   .t-lbl {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
+    font-size: 14px;
     color: var(--text);
     padding-left: 10px;
   }
@@ -465,7 +476,7 @@
   .t-rate, .t-base, .t-fee {
     text-align: right;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
+    font-size: 14px;
     color: var(--text-mid);
   }
 
@@ -485,7 +496,7 @@
   }
 
   .rate-title {
-    font-size: 10px;
+    font-size: 13px;
     font-weight: 700;
     letter-spacing: .12em;
     text-transform: uppercase;
@@ -494,7 +505,7 @@
 
   .rate-big {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 22px;
+    font-size: 27px;
     color: var(--accent);
     text-shadow: 0 0 16px rgba(var(--accent-rgb),.3);
   }
@@ -536,7 +547,7 @@
     justify-content: space-between;
     margin-top: 7px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
+    font-size: 15px;
     color: var(--text-dim);
   }
 
@@ -546,7 +557,7 @@
   .footer {
     text-align: center;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
+    font-size: 13px;
     color: var(--text-dim);
     letter-spacing: .08em;
     padding-top: 4px;
@@ -559,12 +570,12 @@
   <div class="hdr">
     <div>
       <h1 id="mainTitle">Calculateur d'honoraires</h1>
+      <div class="brand">Moonshot Growth</div>
       <div class="swatches" id="swatches">
         <button class="swatch"        data-theme="theme-warm" title="Thème chaud" aria-label="Thème chaud"></button>
         <button class="swatch active" data-theme="theme-blue" title="Thème bleu"  aria-label="Thème bleu"></button>
       </div>
     </div>
-    <div class="brand">Moonshot Growth</div>
   </div>
 
   <div class="card budget-card" id="budgetCard">
