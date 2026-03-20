@@ -553,16 +553,15 @@
   }
 </style>
 </head>
-<body class="theme-warm">
+<body class="theme-blue">
 <div class="wrap" id="wrap">
 
   <div class="hdr">
     <div>
       <h1 id="mainTitle">Calculateur d'honoraires</h1>
-      <div class="hdr-sub">Grille tarifaire Google Ads · HT</div>
       <div class="swatches" id="swatches">
-        <button class="swatch active" data-theme="theme-warm" title="Thème chaud" aria-label="Thème chaud"></button>
-        <button class="swatch"        data-theme="theme-blue" title="Thème bleu"  aria-label="Thème bleu"></button>
+        <button class="swatch"        data-theme="theme-warm" title="Thème chaud" aria-label="Thème chaud"></button>
+        <button class="swatch active" data-theme="theme-blue" title="Thème bleu"  aria-label="Thème bleu"></button>
       </div>
     </div>
     <div class="brand">Moonshot Growth</div>
@@ -630,7 +629,7 @@
     </div>
   </div>
 
-  <div class="footer" id="footer">Moonshot Growth · Grille tarifaire Google Ads · 2025</div>
+  <div class="footer" id="footer">Moonshot Growth</div>
 
 </div>
 
@@ -835,7 +834,6 @@
      */
     gsap.set('.brand',   { opacity: 0, y: 6 });
     gsap.set(wordSpans,  { y: '100%' });
-    gsap.set('.hdr-sub', { opacity: 0, y: 6 });
     gsap.set('.swatches',{ opacity: 0, y: 5 });
     gsap.set(['#budgetCard','#resultsRow','#tableCard','#rateCard','#footer'],
              { opacity: 0, y: 20 });
@@ -844,7 +842,6 @@
 
     tl.to('.brand',    { y: 0, opacity: 1, duration: 0.4  }, 0.05);
     tl.to(wordSpans,   { y: 0, opacity: 1, duration: 0.55, stagger: 0.08 }, 0.1);
-    tl.to('.hdr-sub',  { y: 0, opacity: 1, duration: 0.35 }, 0.36);
     tl.to('.swatches', { y: 0, opacity: 1, duration: 0.3  }, 0.46);
     tl.from('.hdr',    { borderBottomColor: 'transparent', duration: 0.45 }, 0.36);
     tl.to(['#budgetCard','#resultsRow','#tableCard','#rateCard','#footer'], {
