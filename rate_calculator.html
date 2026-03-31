@@ -4,1295 +4,1027 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calculateur d'Honoraires · Moonshot Growth</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300;1,600&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../main-design-system/tokens.css">
+<link rel="stylesheet" href="../main-design-system/base.css">
+<link rel="stylesheet" href="../main-design-system/components.css">
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/motion@11/dist/motion.js"></script>
 <style>
-  /* ══════════════════════════════════════
-     THEMES
-  ══════════════════════════════════════ */
-  :root, .theme-warm {
-    --bg:            #f6f3ee;
-    --surface:       #ffffff;
-    --border:        #ece7de;
-    --border-mid:    #ddd8ce;
-    --text:          #1b1e2d;
-    --text-mid:      #8a8f9e;
-    --text-dim:      #c0bab0;
-    --accent:        #f5a623;
-    --accent-rgb:    245,166,35;
-    --accent-2:      #ff8800;
-    --grid-c:        rgba(140,125,100,.13);
-    --thead-bg:      #faf8f4;
-    --row-border:    #f4f0ea;
-    --bar-track-bg:  #ede8e0;
-    --shadow-sm:     0 1px 3px rgba(0,0,0,.05), 0 2px 10px rgba(0,0,0,.04);
-    --shadow-md:     0 4px 20px rgba(0,0,0,.09), 0 1px 4px rgba(0,0,0,.05);
-    --r:             12px;
-  }
-
-  .theme-blue {
-    --bg:            #edf2f9;
-    --surface:       #ffffff;
-    --border:        #ccd8ed;
-    --border-mid:    #bed0ea;
-    --text:          #18213a;
-    --text-mid:      #5a7398;
-    --text-dim:      #99b0cc;
-    --accent:        #3b6ef5;
-    --accent-rgb:    59,110,245;
-    --accent-2:      #1a4fd6;
-    --grid-c:        rgba(70,100,160,.1);
-    --thead-bg:      #f3f7fd;
-    --row-border:    #edf2fb;
-    --bar-track-bg:  #d8e4f5;
-    --shadow-sm:     0 1px 3px rgba(0,0,30,.06), 0 2px 10px rgba(0,0,30,.04);
-    --shadow-md:     0 4px 20px rgba(0,0,30,.10), 0 1px 4px rgba(0,0,30,.05);
-  }
-
-  /* ══════════════════════════════════════
-     GLOBAL THEME-TRANSITION DECLARATIONS
-     (smooth crossfade on class swap)
-  ══════════════════════════════════════ */
-  body,
-  .hdr, .card, .t-head, .tr, .bar-track, .bar-fill, .bmark,
-  .hdr-sub, .budget-eur, .range-labels, .bar-scale,
-  .rate-title, .rate-big, .footer, .field-label,
-  .res-lbl, .t-lbl, .t-rate, .t-base, .t-fee,
-  .budget-input, .min-notice, .min-badge, .brand {
-    transition-property: background-color, background, border-color,
-                         color, box-shadow, text-shadow, opacity;
-    transition-duration: 0.35s;
-    transition-timing-function: ease;
-  }
-
-  /* ══════════════════════════════════════
-     BASE
-  ══════════════════════════════════════ */
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 56px 20px 72px;
-    overflow-x: hidden;
-  }
-
-  /* Grid */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(var(--grid-c) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid-c) 1px, transparent 1px);
-    background-size: 48px 48px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .wrap {
-    width: 100%;
-    max-width: 640px;
-    position: relative;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    opacity: 0;
-  }
-
-  /* ══════════════════════════════════════
-     HEADER
-  ══════════════════════════════════════ */
-  .hdr {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    padding-bottom: 22px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 4px;
-  }
-
-  .hdr > div { display: flex; flex-direction: column; gap: 2px; }
-
-  .hdr h1 {
-    font-family: 'Space Mono', monospace;
-    font-size: 34px;
-    font-weight: 700;
-    color: var(--text);
-    letter-spacing: -.01em;
-    line-height: 1.18;
-  }
-
-  .hdr-sub {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 14px;
-    font-weight: 300;
-    color: var(--text-mid);
-    margin-top: 6px;
-    letter-spacing: .01em;
-  }
-
-  /* ── Swatches ── */
-  .swatches {
-    display: flex;
-    gap: 7px;
-    align-items: center;
-    margin-top: 10px;
-  }
-
-  .swatch {
-    width: 16px;
-    height: 16px;
-    border-radius: 4px;
-    border: 2px solid transparent;
-    cursor: pointer;
-    padding: 0;
-    outline: none;
-    flex-shrink: 0;
-    /* override the global transition for swatches — snappier */
-    transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease !important;
-  }
-
-  .swatch[data-theme="theme-warm"] { background: #f5a623; }
-  .swatch[data-theme="theme-blue"]  { background: #3b6ef5; }
-
-  .swatch.active {
-    border-color: rgba(0,0,0,.3);
-    transform: scale(1.18);
-    box-shadow: 0 2px 8px rgba(0,0,0,.22);
-  }
-
-  .swatch:hover:not(.active) {
-    transform: scale(1.22);
-    box-shadow: 0 2px 10px rgba(0,0,0,.2);
-  }
-
-  .brand {
-    font-family: 'Space Mono', monospace;
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: .04em;
-    color: var(--accent);
-    text-shadow: 0 0 24px rgba(var(--accent-rgb),.35);
-    cursor: default;
-  }
-
-  .brand:hover { text-shadow: 0 0 36px rgba(var(--accent-rgb),.55); }
-
-  /* ══════════════════════════════════════
-     CARDS
-  ══════════════════════════════════════ */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--r);
-    box-shadow: var(--shadow-sm);
-  }
-
-  /* ── Budget card ── */
-  .budget-card { padding: 24px 24px 20px; }
-
-  .budget-card:focus-within {
-    border-color: rgba(var(--accent-rgb),.35);
-    box-shadow: var(--shadow-sm), 0 0 0 3px rgba(var(--accent-rgb),.09);
-  }
-
-  .field-label {
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: var(--text-mid);
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .field-label::before {
-    content: '';
-    display: block;
-    width: 6px;
-    height: 6px;
-    background: var(--accent);
-    border-radius: 50%;
-    animation: dot-pulse 2.5s ease-in-out infinite;
-    flex-shrink: 0;
-  }
-
-  @keyframes dot-pulse {
-    0%,100% { box-shadow: 0 0 6px  rgba(var(--accent-rgb),.35); }
-    50%      { box-shadow: 0 0 16px rgba(var(--accent-rgb),.7);  }
-  }
-
-  .budget-row {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-    margin-bottom: 22px;
-  }
-
-  .budget-input {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 64px;
-    font-weight: 400;
-    color: var(--text);
-    background: transparent;
-    border: none;
-    outline: none;
-    -moz-appearance: textfield;
-    width: 280px;
-    letter-spacing: -.03em;
-    caret-color: var(--accent);
-  }
-
-  .budget-input::-webkit-outer-spin-button,
-  .budget-input::-webkit-inner-spin-button { -webkit-appearance: none; }
-
-  .budget-eur {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 37px;
-    font-weight: 300;
-    color: var(--text-dim);
-  }
-
-  /* ── Slider ── */
-  input[type="range"] {
-    -webkit-appearance: none;
-    width: 100%;
-    height: 44px;          /* large touch target */
-    background: transparent;
-    outline: none;
-    cursor: pointer;
-    margin: -8px 0;        /* offset the extra height so layout stays compact */
-  }
-
-  input[type="range"]::-webkit-slider-runnable-track {
-    height: 3px;
-    border-radius: 3px;
-    background: linear-gradient(
-      to right,
-      var(--accent) var(--fill, 0%),
-      var(--border-mid) var(--fill, 0%)
-    );
-  }
-
-  /* Firefox */
-  input[type="range"]::-moz-range-track {
-    height: 3px;
-    border-radius: 3px;
-    background: var(--border-mid);
-  }
-  input[type="range"]::-moz-range-progress {
-    height: 3px;
-    border-radius: 3px;
-    background: var(--accent);
-  }
-
-  input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: var(--accent);
-    cursor: pointer;
-    margin-top: -10.5px;   /* vertically centre thumb on 3px track */
-    box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px rgba(var(--accent-rgb),.3);
-    animation: thumb-pulse 2.5s ease-in-out infinite;
-    transition: background .35s ease, transform .15s ease;
-  }
-
-  input[type="range"]::-moz-range-thumb {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: none;
-    background: var(--accent);
-    cursor: pointer;
-    box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px rgba(var(--accent-rgb),.3);
-    transition: background .35s ease, transform .15s ease;
-  }
-
-  input[type="range"]:active::-webkit-slider-thumb {
-    transform: scale(1.15);
-    animation: none;
-    box-shadow: 0 0 0 3px var(--surface), 0 0 0 10px rgba(var(--accent-rgb),.25);
-  }
-
-  input[type="range"]:active::-moz-range-thumb {
-    transform: scale(1.15);
-  }
-
-  @keyframes thumb-pulse {
-    0%,100% { box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px  rgba(var(--accent-rgb),.28); }
-    50%      { box-shadow: 0 0 0 3px var(--surface), 0 0 0 10px rgba(var(--accent-rgb),.13); }
-  }
-
-  .bmark-row {
-    position: relative;
-    height: 7px;
-    margin-top: 5px;
-  }
-
-  .bmark {
-    position: absolute;
-    top: 0;
-    width: 1px;
-    height: 7px;
-    background: var(--border-mid);
-    transform: translateX(-50%);
-  }
-
-  .range-labels {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 4px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    color: var(--text-dim);
-  }
-
-  .min-notice {
-    display: none;
-    align-items: center;
-    gap: 7px;
-    margin-top: 12px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 14px;
-    color: var(--text-mid);
-  }
-
-  .min-notice.show { display: flex; }
-
-  .min-badge {
-    background: rgba(var(--accent-rgb),.12);
-    color: var(--accent);
-    border: 1px solid rgba(var(--accent-rgb),.3);
-    border-radius: 4px;
-    padding: 2px 6px;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: .07em;
-  }
-
-  /* ══════════════════════════════════════
-     RESULT CARDS
-  ══════════════════════════════════════ */
-  .results {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 8px;
-  }
-
-  .res-card {
-    border-radius: var(--r);
-    border: 1px solid var(--border);
-    background: var(--surface);
-    padding: 16px;
-    box-shadow: var(--shadow-sm);
-    cursor: default;
-    will-change: transform;
-    /* combine hover + theme transitions */
-    transition:
-      transform .2s ease,
-      box-shadow .25s ease,
-      background-color .35s ease,
-      background .35s ease,
-      border-color .35s ease !important;
-  }
-
-  .res-card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-md);
-  }
-
-  .res-card.accent {
-    border-color: rgba(var(--accent-rgb),.38);
-    background: linear-gradient(140deg, #fff 0%, rgba(var(--accent-rgb),.055) 100%);
-    box-shadow: 0 0 0 1px rgba(var(--accent-rgb),.35), 0 4px 24px rgba(var(--accent-rgb),.18);
-  }
-
-  .res-card.accent:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 0 0 1px rgba(var(--accent-rgb),.45), 0 8px 36px rgba(var(--accent-rgb),.22);
-  }
-
-  .res-lbl {
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: var(--text-mid);
-    margin-bottom: 9px;
-  }
-
-  .res-card.accent .res-lbl { color: var(--accent); opacity: .75; }
-
-  .res-val {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 25px;
-    color: var(--text);
-  }
-
-  .res-card.accent .res-val {
-    font-size: 32px;
-    color: var(--accent);
-  }
-
-  /* ══════════════════════════════════════
-     BRACKET TABLE
-  ══════════════════════════════════════ */
-  .table-card { overflow: hidden; }
-
-  .t-head {
-    display: grid;
-    grid-template-columns: 180px 72px 96px 1fr;
-    padding: 10px 20px;
-    border-bottom: 1px solid var(--border);
-    background: var(--thead-bg);
-    font-family: 'Syne', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: .07em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-  }
-
-  .tr {
-    display: grid;
-    grid-template-columns: 180px 72px 96px 1fr;
-    padding: 12px 20px;
-    border-bottom: 1px solid var(--row-border);
-    font-size: 15px;
-    align-items: center;
-    position: relative;
-    will-change: transform, opacity;
-  }
-
-  .tr:last-child { border-bottom: none; }
-
-  .tr::after {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 3px;
-    border-radius: 0 2px 2px 0;
-    background: transparent;
-    box-shadow: none;
-    transition: background .3s ease, box-shadow .3s ease;
-  }
-
-  .tr.active { background: rgba(var(--accent-rgb),.045); }
-
-  .tr.active::after {
-    background: var(--accent);
-    box-shadow: 2px 0 12px rgba(var(--accent-rgb),.45);
-  }
-
-  .tr.inactive { opacity: .22; }
-
-  .t-lbl {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 14px;
-    color: var(--text);
-    padding-left: 10px;
-  }
-
-  .t-rate, .t-base, .t-fee {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 14px;
-    color: var(--text-mid);
-  }
-
-  .t-rate { text-align: center; }
-  .t-base, .t-fee { text-align: right; }
-
-  .tr.active .t-rate { color: var(--accent); }
-  .tr.active .t-fee  { color: var(--text); font-weight: 500; }
-
-  /* ══════════════════════════════════════
-     RATE BAR
-  ══════════════════════════════════════ */
-  .rate-card { padding: 16px 20px; }
-
-  .rate-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 12px;
-  }
-
-  .rate-title {
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: var(--text-mid);
-  }
-
-  .rate-big {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 27px;
-    color: var(--accent);
-    text-shadow: 0 0 16px rgba(var(--accent-rgb),.3);
-  }
-
-  .bar-track {
-    height: 8px;
-    background: var(--bar-track-bg);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-
-  .bar-fill {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, var(--accent) 0%, var(--accent-2) 100%);
-    border-radius: 4px;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 0 12px rgba(var(--accent-rgb),.4);
-  }
-
-  .bar-fill::after {
-    content: '';
-    position: absolute;
-    top: 0; left: -200%;
-    width: 80%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.55) 50%, transparent 100%);
-    animation: shimmer 2.8s ease-in-out infinite;
-  }
-
-  @keyframes shimmer {
-    0%   { left: -200%; }
-    100% { left: 250%;  }
-  }
-
-  .bar-scale {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 7px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 15px;
-    color: var(--text-dim);
-  }
-
-  /* ══════════════════════════════════════
-     FOOTER
-  ══════════════════════════════════════ */
-  .footer {
-    text-align: center;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    color: var(--text-dim);
-    letter-spacing: .08em;
-    padding-top: 4px;
-  }
-  /* ══════════════════════════════════════
-     DESIGN SWITCH BUTTON
-  ══════════════════════════════════════ */
-  .design-switch-btn {
-    align-self: center;
-    background: transparent;
-    border: 1px solid rgba(var(--accent-rgb), 0.28);
-    color: var(--text-mid);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    padding: 7px 13px;
-    border-radius: 6px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease,
-                background-color 0.35s ease;
-  }
-  .design-switch-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(var(--accent-rgb), 0.07);
-  }
-  .dsb-dot {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 6px rgba(var(--accent-rgb), 0.7);
-    animation: dot-pulse 2.5s ease-in-out infinite;
-    flex-shrink: 0;
-  }
-
-  @media (max-width: 540px) {
-    .results {
-      grid-template-columns: 1fr 1fr;
-    }
-    .res-card.accent {
-      grid-column: 1 / -1;
-    }
-    .t-head,
-    .tr {
-      grid-template-columns: 1fr 64px 88px;
-      padding-left: 12px;
-      padding-right: 12px;
-    }
-    .t-base { display: none; }
-    .t-head span:nth-child(3) { display: none; }
-  }
-</style>
-</head>
-<body class="theme-blue">
-<div class="wrap" id="wrap">
-
-  <div class="hdr">
-    <div>
-      <h1 id="mainTitle">Calculateur d'honoraires</h1>
-      <div class="brand">Moonshot Growth</div>
-      <div class="swatches" id="swatches">
-        <button class="swatch"        data-theme="theme-warm" title="Thème chaud" aria-label="Thème chaud"></button>
-        <button class="swatch active" data-theme="theme-blue" title="Thème bleu"  aria-label="Thème bleu"></button>
-      </div>
-    </div>
-    <button id="switchDesign" class="design-switch-btn" title="Basculer vers le nouveau design">
-      <span class="dsb-dot"></span>Studio
-    </button>
-  </div>
-
-  <div class="card budget-card" id="budgetCard">
-    <div class="field-label">Budget média mensuel</div>
-    <div class="budget-row">
-      <input type="number" id="budgetInput" class="budget-input" value="0" min="0" max="9999999" step="500">
-      <span class="budget-eur">€</span>
-    </div>
-    <div class="slider-wrap">
-      <input type="range" id="budgetSlider" min="0" max="150000" step="500" value="0">
-      <div class="bmark-row">
-        <div class="bmark" style="left:3.33%"></div>
-        <div class="bmark" style="left:13.33%"></div>
-        <div class="bmark" style="left:33.33%"></div>
-        <div class="bmark" style="left:66.67%"></div>
-      </div>
-    </div>
-    <div class="range-labels">
-      <span>0 €</span><span>50 k€</span><span>100 k€</span><span>150 k€</span>
-    </div>
-    <div class="min-notice" id="minNotice">
-      <span class="min-badge">MIN</span>
-      Forfait minimum de 800 € appliqué
-    </div>
-  </div>
-
-  <div class="results" id="resultsRow">
-    <div class="res-card accent" id="feeCard">
-      <div class="res-lbl">Honoraires HT</div>
-      <div class="res-val" id="totalFee">—</div>
-    </div>
-    <div class="res-card">
-      <div class="res-lbl">Taux effectif</div>
-      <div class="res-val" id="effectiveRate">—</div>
-    </div>
-    <div class="res-card">
-      <div class="res-lbl">Total client</div>
-      <div class="res-val" id="totalClient">—</div>
-    </div>
-  </div>
-
-  <div class="card table-card" id="tableCard">
-    <div class="t-head">
-      <span>Tranche</span>
-      <span style="text-align:center">Taux</span>
-      <span style="text-align:right">Base</span>
-      <span style="text-align:right">Honoraires</span>
-
-    </div>
-    <div id="bracketsContainer"></div>
-  </div>
-
-  <div class="card rate-card" id="rateCard">
-    <div class="rate-top">
-      <span class="rate-title">Taux effectif</span>
-      <span class="rate-big" id="barPct">—</span>
-    </div>
-    <div class="bar-track">
-      <div class="bar-fill" id="barFill"></div>
-    </div>
-    <div class="bar-scale">
-      <span>8 %</span><span>10 %</span><span>12 %</span><span>15 %</span><span>18 %</span>
-    </div>
-  </div>
-
-
-</div>
-
-<!-- ═══════════════════════════════════════════════════════════════
-     V2 — MIDNIGHT REUTERS  ·  Dark luxury financial terminal
-═══════════════════════════════════════════════════════════════ -->
-<div id="v2" role="main" aria-label="Studio — nouveau design">
-
-  <!-- Decorative concentric arcs (top-right) -->
-  <div class="v2-arc v2-arc--a"></div>
-  <div class="v2-arc v2-arc--b"></div>
-  <div class="v2-arc v2-arc--c"></div>
-
-  <!-- Fixed back button -->
-  <button id="v2Back" class="v2-back">
-    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
-      <path d="M8.5 2L3.5 6.5L8.5 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    Retour
-  </button>
-
-  <div class="v2-wrap">
-
-    <!-- ── Header ── -->
-    <header class="v2-hdr v2-section">
-      <div class="v2-hdr-inner">
-        <div class="v2-hdr-left">
-          <div class="v2-brand-row">
-            <span class="v2-live-dot"></span>
-            <span class="v2-brand">Moonshot Growth</span>
-          </div>
-          <h1 class="v2-title">Moonrates</h1>
-        </div>
-        <div class="v2-hdr-right">
-          <div class="v2-hdr-tag">Grille tarifaire</div>
-          <div class="v2-hdr-year">2026</div>
-        </div>
-      </div>
-    </header>
-
-    <!-- ── Budget ── -->
-    <section class="v2-budget v2-section">
-      <div class="v2-field-label">Budget média mensuel</div>
-      <div class="v2-budget-row">
-        <input type="number" id="v2BudgetInput" class="v2-budget-num"
-               value="10000" min="0" max="9999999" step="500">
-        <span class="v2-eur">€</span>
-      </div>
-      <div class="v2-slider-wrap">
-        <input type="range" id="v2Slider" class="v2-slider"
-               min="0" max="150000" step="500" value="10000">
-        <div class="v2-bmarks">
-          <div class="v2-bmark" style="left:3.33%"></div>
-          <div class="v2-bmark" style="left:13.33%"></div>
-          <div class="v2-bmark" style="left:33.33%"></div>
-          <div class="v2-bmark" style="left:66.67%"></div>
-        </div>
-      </div>
-      <div class="v2-range-labels">
-        <span>0 €</span><span>50 k€</span><span>100 k€</span><span>150 k€</span>
-      </div>
-      <div class="v2-min-notice" id="v2MinNotice">
-        <span class="v2-min-badge">MIN</span>
-        Forfait minimum de 800 € appliqué
-      </div>
-    </section>
-
-    <!-- ── Results ── -->
-    <section class="v2-results v2-section">
-      <div class="v2-metric v2-metric--hero" id="v2FeeCard">
-        <div class="v2-metric-lbl">Honoraires HT</div>
-        <div class="v2-metric-val" id="v2Fee">—</div>
-      </div>
-      <div class="v2-metric">
-        <div class="v2-metric-lbl">Taux effectif</div>
-        <div class="v2-metric-val" id="v2Rate">—</div>
-      </div>
-      <div class="v2-metric">
-        <div class="v2-metric-lbl">Total client</div>
-        <div class="v2-metric-val" id="v2Client">—</div>
-      </div>
-    </section>
-
-    <!-- ── Rate gauge ── -->
-    <section class="v2-gauge-section v2-section">
-      <div class="v2-gauge-top">
-        <span class="v2-gauge-lbl">Taux effectif</span>
-        <span class="v2-gauge-pct" id="v2BarPct">—</span>
-      </div>
-      <div class="v2-gauge-track">
-        <div class="v2-gauge-fill" id="v2BarFill"></div>
-      </div>
-      <div class="v2-gauge-scale">
-        <span>8 %</span><span>10 %</span><span>12 %</span><span>15 %</span><span>18 %</span>
-      </div>
-    </section>
-
-    <!-- ── Bracket table ── -->
-    <section class="v2-table v2-section">
-      <div class="v2-t-head">
-        <span>Tranche</span>
-        <span>Taux</span>
-        <span class="v2-base-col">Base</span>
-        <span>Honoraires</span>
-      </div>
-      <div id="v2Brackets"></div>
-    </section>
-
-  </div><!-- /.v2-wrap -->
-</div><!-- /#v2 -->
-
-<style>
-/* ═══════════════════════════════════════════════════════════
-   V2 — MOONRATES
-   Light editorial financial dashboard
-   Fonts: JetBrains Mono (display) · Space Mono (data) · Outfit (labels)
-   Palette: #eef2fb bg · #3b6ef5 blue · #18213a text
-════════════════════════════════════════════════════════════ */
-
-#v2, #v2 * { box-sizing: border-box; }
-#v2 h1, #v2 h2, #v2 h3, #v2 p, #v2 ul, #v2 ol { margin: 0; }
-#v2 button, #v2 input { padding: 0; appearance: none; -webkit-appearance: none; }
-
-#v2 {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  overflow-y: auto;
-  overflow-x: hidden;
-
-  /* light bg: subtle grid + blue radial glow at top-right */
-  background:
-    linear-gradient(var(--v2-grid-c) 1px, transparent 1px),
-    linear-gradient(90deg, var(--v2-grid-c) 1px, transparent 1px),
-    radial-gradient(ellipse 800px 600px at 100% 0%, rgba(59,110,245,.06) 0%, transparent 65%),
-    #eef2fb;
-  background-size: 48px 48px, 48px 48px, auto, auto;
-
-  --v2-accent:    #3b6ef5;
-  --v2-accent-2:  #1a4fd6;
-  --v2-accent-rgb: 59,110,245;
-  --v2-text:      #18213a;
-  --v2-mid:       #5a7398;
-  --v2-dim:       #99b0cc;
-  --v2-border:    #ccd8ed;
-  --v2-surface:   #ffffff;
-  --v2-grid-c:    rgba(70,100,160,.08);
-}
-
-/* Decorative arcs (top-right, partially off-screen) */
-.v2-arc {
-  position: fixed;
-  border: 1px solid rgba(59,110,245,.1);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
-}
-.v2-arc--a { width: 960px; height: 960px; right: -480px; top: -380px; }
-.v2-arc--b { width: 620px; height: 620px; right: -320px; top: -210px; border-color: rgba(59,110,245,.07); }
-.v2-arc--c { width: 320px; height: 320px; right: -150px; top: -80px;  border-color: rgba(59,110,245,.05); }
-
-/* Back button (fixed top-left) */
-.v2-back {
-  position: fixed;
-  top: 20px;
-  left: 24px;
-  z-index: 200;
-  background: transparent;
-  border: 1px solid rgba(59,110,245,.25);
-  color: var(--v2-mid);
-  font-family: 'Outfit', sans-serif;
-  font-size: 12px;
-  font-weight: 400;
-  letter-spacing: .07em;
-  padding: 7px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  transition: border-color .2s ease, color .2s ease;
-}
-.v2-back:hover { border-color: var(--v2-accent); color: var(--v2-accent); }
-
-/* Main container */
-#v2 > .v2-wrap {
-  position: relative;
-  z-index: 1;
-  max-width: 880px;
-  margin: 0 auto;
-  padding: 72px 56px 80px;
+/* ══════════════════════════════════════
+   RATE CALCULATOR — MOONSHOT DESIGN SYSTEM
+   Project-specific overrides
+══════════════════════════════════════ */
+
+/* Override base html font for this tool */
+html { font-size: 16px; }
+
+body {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  padding: 0;
+  overflow-x: hidden;
 }
 
-/* Section separators */
-.v2-section {
-  padding: 44px 0;
-  border-bottom: 1px solid var(--v2-border);
+/* ── Layout ── */
+.calc-page {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 56px 32px 80px;
+  position: relative;
+  z-index: 1;
 }
-.v2-section:last-of-type { border-bottom: none; }
 
-/* ── HEADER ── */
-.v2-hdr { padding-top: 16px; }
-
-.v2-hdr-inner {
+/* ── Header ── */
+.calc-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
 }
 
-.v2-brand-row {
+.calc-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.calc-title {
+  font-family: var(--font);
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--navy);
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+
+.calc-brand {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 18px;
+  gap: 6px;
+  margin-top: 6px;
 }
 
-.v2-live-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--v2-accent);
-  box-shadow: 0 0 8px rgba(59,110,245,.6);
-  animation: v2-pulse 2.2s ease-in-out infinite;
-  flex-shrink: 0;
+.calc-brand-bars {
+  display: flex;
+  gap: 1.5px;
+  align-items: flex-end;
 }
-@keyframes v2-pulse {
-  0%,100% { opacity: 1;  box-shadow: 0 0 5px  rgba(59,110,245,.5); }
-  50%      { opacity: .7; box-shadow: 0 0 14px rgba(59,110,245,.9); }
-}
+.calc-brand-bars span { display: block; width: 2px; }
+.calc-brand-bars span:nth-child(1) { height: 10px; background: var(--scarlet); }
+.calc-brand-bars span:nth-child(2) { height: 8px; background: var(--saffron); }
+.calc-brand-bars span:nth-child(3) { height: 6px; background: var(--blue); }
+.calc-brand-bars span:nth-child(4) { height: 4px; background: var(--emerald); }
 
-.v2-brand {
-  font-family: 'Outfit', sans-serif;
-  font-size: 11px;
-  font-weight: 400;
-  letter-spacing: .22em;
+.calc-brand-text {
+  font-family: var(--font);
+  font-weight: 900;
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--v2-accent);
+  color: var(--navy);
 }
 
-.v2-title {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 72px;
-  font-weight: 300;
-  color: var(--v2-text);
-  letter-spacing: -.04em;
-  line-height: 1;
-}
-
-.v2-hdr-right {
+.calc-header-right {
   text-align: right;
-  padding-bottom: 8px;
-}
-.v2-hdr-tag {
-  font-family: 'Outfit', sans-serif;
-  font-size: 11px;
-  font-weight: 400;
-  letter-spacing: .16em;
-  text-transform: uppercase;
-  color: var(--v2-mid);
-  margin-bottom: 5px;
-}
-.v2-hdr-year {
-  font-family: 'Space Mono', monospace;
-  font-size: 34px;
-  font-weight: 400;
-  color: var(--v2-dim);
-  letter-spacing: -.03em;
+  padding-bottom: 4px;
 }
 
-/* ── BUDGET ── */
-.v2-field-label {
-  font-family: 'Outfit', sans-serif;
-  font-size: 11px;
+.calc-year {
+  font-family: var(--font-mono);
+  font-size: 28px;
   font-weight: 400;
-  letter-spacing: .16em;
+  color: var(--border);
+  letter-spacing: -0.03em;
+}
+
+.calc-tag {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--v2-mid);
+  color: var(--text-muted);
+}
+
+/* ── Sections ── */
+.calc-section {
+  padding: 32px 0;
+  border-bottom: 1px solid var(--border);
+}
+.calc-section:last-child { border-bottom: none; }
+
+/* ── Field label ── */
+.calc-field-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
   margin-bottom: 14px;
   display: flex;
   align-items: center;
   gap: 8px;
 }
-.v2-field-label::before {
+.calc-field-label::before {
   content: '';
-  display: inline-block;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--v2-accent);
-  box-shadow: 0 0 8px rgba(59,110,245,.5);
-  animation: v2-pulse 2.5s ease-in-out infinite;
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--scarlet);
 }
 
-.v2-budget-row {
+/* ── Budget input ── */
+.calc-budget-row {
   display: flex;
   align-items: baseline;
   gap: 10px;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
 }
 
-.v2-budget-num {
-  font-family: 'Space Mono', monospace;
-  font-size: 92px;
+.calc-budget-input {
+  font-family: var(--font-mono);
+  font-size: 72px;
   font-weight: 400;
-  color: var(--v2-text);
+  color: var(--navy);
   background: transparent;
   border: none;
   outline: none;
   -moz-appearance: textfield;
-  width: 420px;
-  letter-spacing: -.045em;
+  width: 360px;
+  letter-spacing: -0.04em;
   line-height: 1;
-  caret-color: var(--v2-accent);
+  caret-color: var(--scarlet);
 }
-.v2-budget-num::-webkit-outer-spin-button,
-.v2-budget-num::-webkit-inner-spin-button { -webkit-appearance: none; }
+.calc-budget-input::-webkit-outer-spin-button,
+.calc-budget-input::-webkit-inner-spin-button { -webkit-appearance: none; }
 
-.v2-eur {
-  font-family: 'Space Mono', monospace;
-  font-size: 44px;
+.calc-eur {
+  font-family: var(--font-mono);
+  font-size: 36px;
   font-weight: 400;
-  color: var(--v2-mid);
-  letter-spacing: -.02em;
+  color: var(--border);
+  letter-spacing: -0.02em;
 }
 
-/* slider */
-.v2-slider-wrap { position: relative; }
-.v2-slider {
+/* ── Slider ── */
+.calc-slider-wrap { position: relative; }
+
+.calc-slider {
   -webkit-appearance: none;
   width: 100%;
-  height: 2px;
-  border-radius: 2px;
+  height: 44px;
+  background: transparent;
   outline: none;
   cursor: pointer;
+  margin: -8px 0;
 }
-.v2-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--v2-accent);
-  cursor: pointer;
-  box-shadow: 0 0 0 3px #eef2fb, 0 0 0 5px rgba(59,110,245,.3);
-  transition: transform .15s ease;
-}
-.v2-slider:active::-webkit-slider-thumb { transform: scale(1.2); }
 
-.v2-bmarks { position: relative; height: 6px; margin-top: 5px; }
-.v2-bmark {
+.calc-slider::-webkit-slider-runnable-track {
+  height: 3px;
+  background: linear-gradient(
+    to right,
+    var(--scarlet) var(--fill, 0%),
+    var(--border) var(--fill, 0%)
+  );
+}
+
+.calc-slider::-moz-range-track {
+  height: 3px;
+  background: var(--border);
+}
+.calc-slider::-moz-range-progress {
+  height: 3px;
+  background: var(--scarlet);
+}
+
+.calc-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  background: var(--scarlet);
+  cursor: pointer;
+  margin-top: -8.5px;
+  box-shadow: 0 0 0 3px var(--cream), 0 0 0 5px rgba(230,57,70,0.25);
+  transition: transform 0.15s ease;
+}
+
+.calc-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: var(--scarlet);
+  cursor: pointer;
+  box-shadow: 0 0 0 3px var(--cream), 0 0 0 5px rgba(230,57,70,0.25);
+  transition: transform 0.15s ease;
+}
+
+.calc-slider:active::-webkit-slider-thumb { transform: scale(1.15); }
+.calc-slider:active::-moz-range-thumb { transform: scale(1.15); }
+
+.calc-bmarks {
+  position: relative;
+  height: 7px;
+  margin-top: 5px;
+}
+.calc-bmark {
   position: absolute;
   top: 0;
   width: 1px;
-  height: 6px;
-  background: var(--v2-border);
+  height: 7px;
+  background: var(--border);
   transform: translateX(-50%);
 }
 
-.v2-range-labels {
+.calc-range-labels {
   display: flex;
   justify-content: space-between;
-  margin-top: 5px;
-  font-family: 'Space Mono', monospace;
-  font-size: 11px;
-  color: var(--v2-mid);
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
 }
 
-.v2-min-notice {
+/* ── Min notice ── */
+.calc-min-notice {
   display: none;
   align-items: center;
   gap: 7px;
   margin-top: 14px;
-  font-family: 'Outfit', sans-serif;
-  font-size: 13px;
-  color: var(--v2-mid);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
 }
-.v2-min-notice.show { display: flex; }
-.v2-min-badge {
-  background: rgba(232,179,74,.1);
-  color: var(--v2-accent);
-  border: 1px solid rgba(232,179,74,.3);
-  border-radius: 3px;
+.calc-min-notice.show { display: flex; }
+
+.calc-min-badge {
+  background: rgba(230,57,70,0.08);
+  color: var(--scarlet);
+  border: 1px solid rgba(230,57,70,0.25);
   padding: 2px 6px;
-  font-family: 'Space Mono', monospace;
-  font-size: 10px;
-  letter-spacing: .08em;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
 }
 
-/* ── RESULTS ── */
-.v2-results {
+/* ── Results ── */
+.calc-results {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
 }
 
-.v2-metric { padding-right: 36px; }
-.v2-metric:last-child { padding-right: 0; }
+.calc-metric {
+  background: var(--cream);
+  padding: 20px 24px;
+}
 
-.v2-metric-lbl {
-  font-family: 'Outfit', sans-serif;
-  font-size: 10px;
-  font-weight: 400;
-  letter-spacing: .16em;
+.calc-metric-lbl {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--v2-mid);
-  margin-bottom: 10px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
 }
 
-.v2-metric-val {
-  font-family: 'Space Mono', monospace;
-  font-size: 26px;
-  color: var(--v2-text);
-  letter-spacing: -.025em;
+.calc-metric-val {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  color: var(--navy);
+  letter-spacing: -0.025em;
 }
 
-.v2-metric--hero .v2-metric-lbl { color: var(--v2-accent); }
-.v2-metric--hero .v2-metric-val {
-  font-size: 36px;
-  color: var(--v2-accent);
-  text-shadow: 0 0 22px rgba(59,110,245,.2);
+.calc-metric--hero {
+  border-top: 3px solid var(--scarlet);
+}
+.calc-metric--hero .calc-metric-lbl { color: var(--scarlet); }
+.calc-metric--hero .calc-metric-val {
+  font-size: 28px;
+  color: var(--scarlet);
 }
 
-/* ── GAUGE ── */
-.v2-gauge-top {
+/* ── Gauge bar ── */
+.calc-gauge-top {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
   margin-bottom: 14px;
 }
-.v2-gauge-lbl {
-  font-family: 'Outfit', sans-serif;
-  font-size: 10px;
-  font-weight: 400;
-  letter-spacing: .16em;
+.calc-gauge-lbl {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--v2-mid);
+  color: var(--text-muted);
 }
-.v2-gauge-pct {
-  font-family: 'Space Mono', monospace;
+.calc-gauge-pct {
+  font-family: var(--font-mono);
   font-size: 22px;
-  color: var(--v2-accent);
-  text-shadow: 0 0 14px rgba(59,110,245,.25);
-  letter-spacing: -.02em;
+  color: var(--scarlet);
+  letter-spacing: -0.02em;
 }
 
-.v2-gauge-track {
+.calc-gauge-track {
   height: 5px;
-  background: var(--v2-border);
-  border-radius: 3px;
+  background: var(--border);
   overflow: hidden;
   position: relative;
 }
-.v2-gauge-fill {
+.calc-gauge-fill {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, #1a4fd6 0%, #3b6ef5 55%, #6b9af8 100%);
-  border-radius: 3px;
-  box-shadow: 0 0 12px rgba(59,110,245,.4);
+  background: linear-gradient(90deg, #cc2f3b 0%, var(--scarlet) 55%, #F4A261 100%);
   position: relative;
   overflow: hidden;
 }
-.v2-gauge-fill::after {
+.calc-gauge-fill::after {
   content: '';
   position: absolute;
   top: 0; left: -200%;
   width: 60%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent);
-  animation: v2-shimmer 3.2s ease-in-out infinite;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+  animation: calc-shimmer 3s ease-in-out infinite;
 }
-@keyframes v2-shimmer {
+@keyframes calc-shimmer {
   0%   { left: -200%; }
   100% { left: 280%; }
 }
 
-.v2-gauge-scale {
+.calc-gauge-scale {
   display: flex;
   justify-content: space-between;
   margin-top: 8px;
-  font-family: 'Space Mono', monospace;
-  font-size: 10px;
-  color: var(--v2-mid);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-muted);
 }
 
-/* ── TABLE ── */
-.v2-t-head {
+/* ── Bracket table ── */
+.calc-t-head {
   display: grid;
   grid-template-columns: 1fr 72px 96px 110px;
-  padding: 0 0 12px 16px;
-  border-bottom: 1px solid var(--v2-border);
-  font-family: 'Outfit', sans-serif;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: .12em;
+  padding: 0 0 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--v2-mid);
+  color: var(--text-muted);
 }
-.v2-t-head span:nth-child(2) { text-align: center; }
-.v2-t-head span:nth-child(3),
-.v2-t-head span:nth-child(4) { text-align: right; }
+.calc-t-head span:nth-child(2) { text-align: center; }
+.calc-t-head span:nth-child(3),
+.calc-t-head span:nth-child(4) { text-align: right; }
 
-.v2-tr {
+.calc-tr {
   display: grid;
   grid-template-columns: 1fr 72px 96px 110px;
-  padding: 15px 0 15px 16px;
-  border-bottom: 1px solid rgba(19,24,38,.6);
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
   align-items: center;
   position: relative;
-  transition: opacity .3s ease;
+  transition: opacity 0.3s ease;
 }
-.v2-tr:last-child { border-bottom: none; }
-.v2-tr.inactive { opacity: .16; }
+.calc-tr:last-child { border-bottom: none; }
+.calc-tr.inactive { opacity: 0.18; }
 
-.v2-tr.active::before {
+.calc-tr.active::before {
   content: '';
   position: absolute;
-  left: 0;
+  left: -8px;
   top: 50%;
   transform: translateY(-50%);
   width: 3px;
-  height: 22px;
-  background: var(--v2-accent);
-  border-radius: 2px;
-  box-shadow: 0 0 10px rgba(59,110,245,.4);
+  height: 20px;
+  background: var(--scarlet);
 }
 
-.v2-t-lbl {
-  font-family: 'Space Mono', monospace;
-  font-size: 13px;
-  color: var(--v2-text);
+.calc-t-lbl {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--navy);
 }
-.v2-t-rate, .v2-t-base, .v2-t-fee {
-  font-family: 'Space Mono', monospace;
-  font-size: 13px;
-  color: var(--v2-mid);
+.calc-t-rate, .calc-t-base, .calc-t-fee {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
 }
-.v2-t-rate { text-align: center; }
-.v2-t-base, .v2-t-fee { text-align: right; }
-.v2-tr.active .v2-t-rate { color: var(--v2-accent); }
-.v2-tr.active .v2-t-fee  { color: var(--v2-accent); }
+.calc-t-rate { text-align: center; }
+.calc-t-base, .calc-t-fee { text-align: right; }
+.calc-tr.active .calc-t-rate { color: var(--scarlet); }
+.calc-tr.active .calc-t-fee  { color: var(--navy); font-weight: 500; }
 
-/* ── MOBILE ── */
+/* ── Velocity bars divider ── */
+.calc-vbars {
+  display: flex;
+  gap: 4px;
+  margin: 24px 0 0;
+}
+.calc-vbars span { height: 3px; }
+.calc-vbars span:nth-child(1) { width: 48px; background: var(--scarlet); }
+.calc-vbars span:nth-child(2) { width: 36px; background: var(--saffron); }
+.calc-vbars span:nth-child(3) { width: 26px; background: var(--blue); }
+.calc-vbars span:nth-child(4) { width: 18px; background: var(--emerald); }
+
+/* ── Footer ── */
+.calc-footer {
+  text-align: center;
+  padding: 24px 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+}
+
+/* ── Responsive ── */
 @media (max-width: 640px) {
-  .v2-wrap { padding: 56px 24px 60px; }
-  .v2-title-a { font-size: 52px; }
-  .v2-title-b { font-size: 48px; }
-  .v2-budget-num { font-size: 58px; width: 100%; }
-  .v2-eur { font-size: 28px; }
-  .v2-hdr-inner { flex-direction: column; align-items: flex-start; gap: 20px; }
-  .v2-hdr-right { text-align: left; }
-  .v2-results { grid-template-columns: 1fr 1fr; row-gap: 28px; }
-  .v2-metric--hero { grid-column: 1 / -1; padding-right: 0; }
-  .v2-metric { padding-right: 0; }
-  .v2-t-head,
-  .v2-tr { grid-template-columns: 1fr 60px 100px; }
-  .v2-base-col, .v2-t-base { display: none; }
+  .calc-page { padding: 40px 20px 60px; }
+  .calc-budget-input { font-size: 48px; width: 100%; }
+  .calc-eur { font-size: 24px; }
+  .calc-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .calc-header-right { text-align: left; }
+  .calc-results { grid-template-columns: 1fr 1fr; }
+  .calc-metric--hero { grid-column: 1 / -1; }
+  .calc-t-head,
+  .calc-tr { grid-template-columns: 1fr 60px 100px; }
+  .calc-t-base { display: none; }
+  .calc-t-head span:nth-child(3) { display: none; }
+  .calc-title { font-size: 26px; }
+}
+
+/* ══════════════════════════════════════
+   EASTER EGG — OLD DESIGN (Konami code)
+   Hidden by default, activated via ↑↑↓↓←→←→BA
+══════════════════════════════════════ */
+#oldDesign {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+#oldDesign.active {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 56px 20px 72px;
+}
+
+/* When old design is active, hide the main calc */
+body.old-design-active .calc-page { display: none; }
+body.old-design-active { background: var(--old-bg, #edf2f9); }
+
+/* Old design close button */
+.old-close-btn {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  z-index: 300;
+  background: transparent;
+  border: 1px solid rgba(59,110,245,0.25);
+  color: #5a7398;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  gap: 7px;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.old-close-btn:hover { border-color: #3b6ef5; color: #3b6ef5; }
+body.old-design-active .old-close-btn { display: flex; }
+
+/* ── Old design styles (self-contained) ── */
+#oldDesign {
+  /* Re-declare old design variables in scope */
+  --old-bg:         #edf2f9;
+  --old-surface:    #ffffff;
+  --old-border:     #ccd8ed;
+  --old-border-mid: #bed0ea;
+  --old-text:       #18213a;
+  --old-text-mid:   #5a7398;
+  --old-text-dim:   #99b0cc;
+  --old-accent:     #3b6ef5;
+  --old-accent-rgb: 59,110,245;
+  --old-accent-2:   #1a4fd6;
+  --old-grid-c:     rgba(70,100,160,.1);
+  --old-thead-bg:   #f3f7fd;
+  --old-row-border: #edf2fb;
+  --old-bar-track:  #d8e4f5;
+  --old-shadow-sm:  0 1px 3px rgba(0,0,30,.06), 0 2px 10px rgba(0,0,30,.04);
+  --old-shadow-md:  0 4px 20px rgba(0,0,30,.10), 0 1px 4px rgba(0,0,30,.05);
+  --old-r:          12px;
+
+  background:
+    linear-gradient(var(--old-grid-c) 1px, transparent 1px),
+    linear-gradient(90deg, var(--old-grid-c) 1px, transparent 1px),
+    var(--old-bg);
+  background-size: 48px 48px, 48px 48px, auto;
+  font-family: 'Syne', sans-serif;
+  color: var(--old-text);
+}
+
+#oldDesign .old-wrap {
+  width: 100%;
+  max-width: 640px;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#oldDesign .old-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--old-border);
+  margin-bottom: 4px;
+}
+#oldDesign .old-hdr > div { display: flex; flex-direction: column; gap: 2px; }
+
+#oldDesign .old-hdr h1 {
+  font-family: 'Space Mono', monospace;
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--old-text);
+  letter-spacing: -0.01em;
+  line-height: 1.18;
+}
+
+#oldDesign .old-hdr-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--old-text-mid);
+  margin-top: 6px;
+  letter-spacing: 0.01em;
+}
+
+#oldDesign .old-brand {
+  font-family: 'Space Mono', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--old-accent);
+  text-shadow: 0 0 24px rgba(var(--old-accent-rgb),0.35);
+}
+
+#oldDesign .old-card {
+  background: var(--old-surface);
+  border: 1px solid var(--old-border);
+  border-radius: var(--old-r);
+  box-shadow: var(--old-shadow-sm);
+}
+
+#oldDesign .old-budget-card { padding: 24px 24px 20px; }
+
+#oldDesign .old-field-label {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--old-text-mid);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#oldDesign .old-field-label::before {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 6px;
+  background: var(--old-accent);
+  border-radius: 50%;
+  animation: old-dot-pulse 2.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes old-dot-pulse {
+  0%,100% { box-shadow: 0 0 6px rgba(59,110,245,0.35); }
+  50%     { box-shadow: 0 0 16px rgba(59,110,245,0.7); }
+}
+
+#oldDesign .old-budget-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+
+#oldDesign .old-budget-input {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 64px;
+  font-weight: 400;
+  color: var(--old-text);
+  background: transparent;
+  border: none;
+  outline: none;
+  -moz-appearance: textfield;
+  width: 280px;
+  letter-spacing: -0.03em;
+  caret-color: var(--old-accent);
+}
+#oldDesign .old-budget-input::-webkit-outer-spin-button,
+#oldDesign .old-budget-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+#oldDesign .old-budget-eur {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 37px;
+  font-weight: 300;
+  color: var(--old-text-dim);
+}
+
+/* Old slider */
+#oldDesign .old-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 44px;
+  background: transparent;
+  outline: none;
+  cursor: pointer;
+  margin: -8px 0;
+}
+#oldDesign .old-slider::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(
+    to right,
+    var(--old-accent) var(--fill, 0%),
+    var(--old-border-mid) var(--fill, 0%)
+  );
+}
+#oldDesign .old-slider::-moz-range-track {
+  height: 3px; border-radius: 3px; background: var(--old-border-mid);
+}
+#oldDesign .old-slider::-moz-range-progress {
+  height: 3px; border-radius: 3px; background: var(--old-accent);
+}
+#oldDesign .old-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--old-accent);
+  cursor: pointer; margin-top: -10.5px;
+  box-shadow: 0 0 0 3px var(--old-surface), 0 0 0 5px rgba(var(--old-accent-rgb),0.3);
+  animation: old-thumb-pulse 2.5s ease-in-out infinite;
+  transition: transform 0.15s ease;
+}
+#oldDesign .old-slider::-moz-range-thumb {
+  width: 24px; height: 24px; border-radius: 50%; border: none;
+  background: var(--old-accent);
+  box-shadow: 0 0 0 3px var(--old-surface), 0 0 0 5px rgba(var(--old-accent-rgb),0.3);
+  transition: transform 0.15s ease;
+}
+#oldDesign .old-slider:active::-webkit-slider-thumb {
+  transform: scale(1.15); animation: none;
+  box-shadow: 0 0 0 3px var(--old-surface), 0 0 0 10px rgba(var(--old-accent-rgb),0.25);
+}
+@keyframes old-thumb-pulse {
+  0%,100% { box-shadow: 0 0 0 3px #fff, 0 0 0 5px rgba(59,110,245,0.28); }
+  50%     { box-shadow: 0 0 0 3px #fff, 0 0 0 10px rgba(59,110,245,0.13); }
+}
+
+#oldDesign .old-bmark-row { position: relative; height: 7px; margin-top: 5px; }
+#oldDesign .old-bmark {
+  position: absolute; top: 0; width: 1px; height: 7px;
+  background: var(--old-border-mid); transform: translateX(-50%);
+}
+
+#oldDesign .old-range-labels {
+  display: flex; justify-content: space-between; margin-top: 4px;
+  font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--old-text-dim);
+}
+
+#oldDesign .old-min-notice {
+  display: none; align-items: center; gap: 7px; margin-top: 12px;
+  font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--old-text-mid);
+}
+#oldDesign .old-min-notice.show { display: flex; }
+#oldDesign .old-min-badge {
+  background: rgba(var(--old-accent-rgb),0.12);
+  color: var(--old-accent);
+  border: 1px solid rgba(var(--old-accent-rgb),0.3);
+  border-radius: 4px; padding: 2px 6px;
+  font-size: 15px; font-weight: 700; letter-spacing: 0.07em;
+}
+
+/* Old results */
+#oldDesign .old-results { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+#oldDesign .old-res-card {
+  border-radius: var(--old-r); border: 1px solid var(--old-border);
+  background: var(--old-surface); padding: 16px; box-shadow: var(--old-shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.25s ease;
+}
+#oldDesign .old-res-card:hover { transform: translateY(-3px); box-shadow: var(--old-shadow-md); }
+#oldDesign .old-res-card.accent {
+  border-color: rgba(var(--old-accent-rgb),0.38);
+  background: linear-gradient(140deg, #fff 0%, rgba(var(--old-accent-rgb),0.055) 100%);
+  box-shadow: 0 0 0 1px rgba(var(--old-accent-rgb),0.35), 0 4px 24px rgba(var(--old-accent-rgb),0.18);
+}
+#oldDesign .old-res-lbl {
+  font-size: 13px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--old-text-mid); margin-bottom: 9px;
+}
+#oldDesign .old-res-card.accent .old-res-lbl { color: var(--old-accent); opacity: 0.75; }
+#oldDesign .old-res-val {
+  font-family: 'JetBrains Mono', monospace; font-size: 25px; color: var(--old-text);
+}
+#oldDesign .old-res-card.accent .old-res-val { font-size: 32px; color: var(--old-accent); }
+
+/* Old table */
+#oldDesign .old-table-card { overflow: hidden; }
+#oldDesign .old-t-head {
+  display: grid; grid-template-columns: 180px 72px 96px 1fr;
+  padding: 10px 20px; border-bottom: 1px solid var(--old-border);
+  background: var(--old-thead-bg);
+  font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.07em; text-transform: uppercase; color: var(--old-text-dim);
+}
+#oldDesign .old-tr {
+  display: grid; grid-template-columns: 180px 72px 96px 1fr;
+  padding: 12px 20px; border-bottom: 1px solid var(--old-row-border);
+  font-size: 15px; align-items: center; position: relative;
+}
+#oldDesign .old-tr:last-child { border-bottom: none; }
+#oldDesign .old-tr::after {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px; border-radius: 0 2px 2px 0;
+  background: transparent; transition: background 0.3s ease;
+}
+#oldDesign .old-tr.active { background: rgba(var(--old-accent-rgb),0.045); }
+#oldDesign .old-tr.active::after {
+  background: var(--old-accent);
+  box-shadow: 2px 0 12px rgba(var(--old-accent-rgb),0.45);
+}
+#oldDesign .old-tr.inactive { opacity: 0.22; }
+#oldDesign .old-t-lbl {
+  font-family: 'JetBrains Mono', monospace; font-size: 14px;
+  color: var(--old-text); padding-left: 10px;
+}
+#oldDesign .old-t-rate, #oldDesign .old-t-base, #oldDesign .old-t-fee {
+  font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--old-text-mid);
+}
+#oldDesign .old-t-rate { text-align: center; }
+#oldDesign .old-t-base, #oldDesign .old-t-fee { text-align: right; }
+#oldDesign .old-tr.active .old-t-rate { color: var(--old-accent); }
+#oldDesign .old-tr.active .old-t-fee  { color: var(--old-text); font-weight: 500; }
+
+/* Old rate bar */
+#oldDesign .old-rate-card { padding: 16px 20px; }
+#oldDesign .old-rate-top {
+  display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px;
+}
+#oldDesign .old-rate-title {
+  font-size: 13px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--old-text-mid);
+}
+#oldDesign .old-rate-big {
+  font-family: 'JetBrains Mono', monospace; font-size: 27px;
+  color: var(--old-accent); text-shadow: 0 0 16px rgba(var(--old-accent-rgb),0.3);
+}
+#oldDesign .old-bar-track {
+  height: 8px; background: var(--old-bar-track);
+  border-radius: 4px; overflow: hidden;
+}
+#oldDesign .old-bar-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--old-accent) 0%, var(--old-accent-2) 100%);
+  border-radius: 4px; position: relative; overflow: hidden;
+  box-shadow: 0 0 12px rgba(var(--old-accent-rgb),0.4);
+}
+#oldDesign .old-bar-fill::after {
+  content: ''; position: absolute; top: 0; left: -200%;
+  width: 80%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
+  animation: old-shimmer 2.8s ease-in-out infinite;
+}
+@keyframes old-shimmer { 0% { left: -200%; } 100% { left: 250%; } }
+
+#oldDesign .old-bar-scale {
+  display: flex; justify-content: space-between; margin-top: 7px;
+  font-family: 'JetBrains Mono', monospace; font-size: 15px; color: var(--old-text-dim);
+}
+
+#oldDesign .old-footer {
+  text-align: center; font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; color: var(--old-text-dim); letter-spacing: 0.08em; padding-top: 4px;
+}
+
+/* Old mobile */
+@media (max-width: 540px) {
+  #oldDesign .old-results { grid-template-columns: 1fr 1fr; }
+  #oldDesign .old-res-card.accent { grid-column: 1 / -1; }
+  #oldDesign .old-t-head, #oldDesign .old-tr {
+    grid-template-columns: 1fr 64px 88px; padding-left: 12px; padding-right: 12px;
+  }
+  #oldDesign .old-t-base { display: none; }
+  #oldDesign .old-t-head span:nth-child(3) { display: none; }
 }
 </style>
+<!-- Fonts for the old easter egg design -->
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     MAIN DESIGN — Moonshot Design System
+═══════════════════════════════════════════════ -->
+<div class="calc-page" id="calcPage">
+
+  <header class="calc-header">
+    <div class="calc-header-left">
+      <h1 class="calc-title" id="calcTitle">Calculateur d'honoraires</h1>
+      <div class="calc-brand">
+        <div class="calc-brand-bars">
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <span class="calc-brand-text">Moonshot Growth</span>
+      </div>
+    </div>
+    <div class="calc-header-right">
+      <div class="calc-tag">Grille tarifaire</div>
+      <div class="calc-year">2026</div>
+    </div>
+  </header>
+
+  <!-- Budget input -->
+  <section class="calc-section">
+    <div class="calc-field-label">Budget media mensuel</div>
+    <div class="calc-budget-row">
+      <input type="number" id="calcInput" class="calc-budget-input" value="0" min="0" max="9999999" step="500">
+      <span class="calc-eur">€</span>
+    </div>
+    <div class="calc-slider-wrap">
+      <input type="range" id="calcSlider" class="calc-slider" min="0" max="150000" step="500" value="0">
+      <div class="calc-bmarks">
+        <div class="calc-bmark" style="left:3.33%"></div>
+        <div class="calc-bmark" style="left:13.33%"></div>
+        <div class="calc-bmark" style="left:33.33%"></div>
+        <div class="calc-bmark" style="left:66.67%"></div>
+      </div>
+    </div>
+    <div class="calc-range-labels">
+      <span>0 €</span><span>50 k€</span><span>100 k€</span><span>150 k€</span>
+    </div>
+    <div class="calc-min-notice" id="calcMinNotice">
+      <span class="calc-min-badge">MIN</span>
+      Forfait minimum de 1 000 € appliqué
+    </div>
+  </section>
+
+  <!-- Results -->
+  <section class="calc-section">
+    <div class="calc-results" id="calcResults">
+      <div class="calc-metric calc-metric--hero" id="calcFeeCard">
+        <div class="calc-metric-lbl">Honoraires HT</div>
+        <div class="calc-metric-val" id="calcFee">—</div>
+      </div>
+      <div class="calc-metric">
+        <div class="calc-metric-lbl">Taux effectif</div>
+        <div class="calc-metric-val" id="calcRate">—</div>
+      </div>
+      <div class="calc-metric">
+        <div class="calc-metric-lbl">Total client</div>
+        <div class="calc-metric-val" id="calcClient">—</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gauge -->
+  <section class="calc-section">
+    <div class="calc-gauge-top">
+      <span class="calc-gauge-lbl">Taux effectif</span>
+      <span class="calc-gauge-pct" id="calcBarPct">—</span>
+    </div>
+    <div class="calc-gauge-track">
+      <div class="calc-gauge-fill" id="calcBarFill"></div>
+    </div>
+    <div class="calc-gauge-scale">
+      <span>8 %</span><span>10 %</span><span>12 %</span><span>15 %</span><span>18 %</span>
+    </div>
+  </section>
+
+  <!-- Bracket table -->
+  <section class="calc-section">
+    <div class="calc-t-head">
+      <span>Tranche</span>
+      <span style="text-align:center">Taux</span>
+      <span style="text-align:right">Base</span>
+      <span style="text-align:right">Honoraires</span>
+    </div>
+    <div id="calcBrackets"></div>
+  </section>
+
+  <!-- Velocity bars + footer -->
+  <div class="calc-vbars">
+    <span></span><span></span><span></span><span></span>
+  </div>
+  <div class="calc-footer">Moonshot Growth · 2026</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     EASTER EGG — OLD DESIGN (Konami code: ↑↑↓↓←→←→BA)
+═══════════════════════════════════════════════ -->
+<button class="old-close-btn" id="oldCloseBtn">
+  <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M10 3L3 10M3 3l7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+  Fermer
+</button>
+<div id="oldDesign">
+  <div class="old-wrap">
+    <div class="old-hdr">
+      <div>
+        <h1>Calculateur d'honoraires</h1>
+        <div class="old-brand">Moonshot Growth</div>
+      </div>
+      <div class="old-hdr-sub">Easter egg</div>
+    </div>
+
+    <div class="old-card old-budget-card">
+      <div class="old-field-label">Budget média mensuel</div>
+      <div class="old-budget-row">
+        <input type="number" id="oldInput" class="old-budget-input" value="0" min="0" max="9999999" step="500">
+        <span class="old-budget-eur">€</span>
+      </div>
+      <div>
+        <input type="range" id="oldSlider" class="old-slider" min="0" max="150000" step="500" value="0">
+        <div class="old-bmark-row">
+          <div class="old-bmark" style="left:3.33%"></div>
+          <div class="old-bmark" style="left:13.33%"></div>
+          <div class="old-bmark" style="left:33.33%"></div>
+          <div class="old-bmark" style="left:66.67%"></div>
+        </div>
+      </div>
+      <div class="old-range-labels">
+        <span>0 €</span><span>50 k€</span><span>100 k€</span><span>150 k€</span>
+      </div>
+      <div class="old-min-notice" id="oldMinNotice">
+        <span class="old-min-badge">MIN</span>
+        Forfait minimum de 1 000 € appliqué
+      </div>
+    </div>
+
+    <div class="old-results">
+      <div class="old-res-card accent" id="oldFeeCard">
+        <div class="old-res-lbl">Honoraires HT</div>
+        <div class="old-res-val" id="oldFee">—</div>
+      </div>
+      <div class="old-res-card">
+        <div class="old-res-lbl">Taux effectif</div>
+        <div class="old-res-val" id="oldRate">—</div>
+      </div>
+      <div class="old-res-card">
+        <div class="old-res-lbl">Total client</div>
+        <div class="old-res-val" id="oldClient">—</div>
+      </div>
+    </div>
+
+    <div class="old-card old-table-card">
+      <div class="old-t-head">
+        <span>Tranche</span>
+        <span style="text-align:center">Taux</span>
+        <span style="text-align:right">Base</span>
+        <span style="text-align:right">Honoraires</span>
+      </div>
+      <div id="oldBrackets"></div>
+    </div>
+
+    <div class="old-card old-rate-card">
+      <div class="old-rate-top">
+        <span class="old-rate-title">Taux effectif</span>
+        <span class="old-rate-big" id="oldBarPct">—</span>
+      </div>
+      <div class="old-bar-track">
+        <div class="old-bar-fill" id="oldBarFill"></div>
+      </div>
+      <div class="old-bar-scale">
+        <span>8 %</span><span>10 %</span><span>12 %</span><span>15 %</span><span>18 %</span>
+      </div>
+    </div>
+
+    <div class="old-footer">Moonshot Growth · 2026 · OG Design</div>
+  </div>
+</div>
 
 <script>
-  /* ── CONSTANTS ── */
+  /* ══════════════════════════════════════
+     SHARED CONSTANTS & HELPERS
+  ══════════════════════════════════════ */
   const BRACKETS = [
     { min: 0,      max: 5000,    rate: 0.18, label: "0 → 5 000 €" },
     { min: 5000,   max: 20000,   rate: 0.15, label: "5 001 → 20 000 €" },
@@ -1300,14 +1032,13 @@
     { min: 50000,  max: 100000,  rate: 0.10, label: "50 001 → 100 000 €" },
     { min: 100000, max: Infinity, rate: 0.08, label: "> 100 000 €" },
   ];
-  const MIN_FEE   = 800;
-  const MAX_SLIDE = 150000;
-  const INIT_VAL  = 10000;
+  const MIN_FEE   = 1000;
+  const MAX_SLIDE  = 150000;
+  const INIT_VAL   = 10000;
 
   const fmt    = n => new Intl.NumberFormat('fr-FR', { style:'currency', currency:'EUR', maximumFractionDigits:0 }).format(n);
   const fmtPct = n => (n * 100).toFixed(1) + '\u202f%';
 
-  /* ── COMPUTE ── */
   function compute(budget) {
     let fee = 0;
     const rows = [];
@@ -1324,157 +1055,114 @@
     return { fee, rows, minApplied };
   }
 
-  /* ── DOM REFS ── */
-  const slider      = document.getElementById('budgetSlider');
-  const input       = document.getElementById('budgetInput');
-  const elFee       = document.getElementById('totalFee');
-  const elRate      = document.getElementById('effectiveRate');
-  const elClient    = document.getElementById('totalClient');
-  const elBarFill   = document.getElementById('barFill');
-  const elBarPct    = document.getElementById('barPct');
-  const elBrackets  = document.getElementById('bracketsContainer');
-  const elMinNotice = document.getElementById('minNotice');
-  const elFeeCard   = document.getElementById('feeCard');
+  /* ══════════════════════════════════════
+     MAIN CALCULATOR (Moonshot Design System)
+  ══════════════════════════════════════ */
+  const calcSlider     = document.getElementById('calcSlider');
+  const calcInput      = document.getElementById('calcInput');
+  const calcElFee      = document.getElementById('calcFee');
+  const calcElRate     = document.getElementById('calcRate');
+  const calcElClient   = document.getElementById('calcClient');
+  const calcElBarFill  = document.getElementById('calcBarFill');
+  const calcElBarPct   = document.getElementById('calcBarPct');
+  const calcElBrackets = document.getElementById('calcBrackets');
+  const calcElMin      = document.getElementById('calcMinNotice');
+  const calcElFeeCard  = document.getElementById('calcFeeCard');
 
-  /* ── STATE ── */
-  const C = { fee: 0, effRate: 0, client: 0 };
-  let prevActive    = new Set();
-  let isFirstRender = true;
+  const CC = { fee: 0, effRate: 0, client: 0 };
+  let calcPrevActive    = new Set();
+  let calcIsFirstRender = true;
 
-  /* ── HELPERS ── */
-  function accentRGB() {
-    return getComputedStyle(document.documentElement)
-      .getPropertyValue('--accent-rgb').trim();
-  }
-
-  function updateSliderFill(val) {
+  function calcUpdateSliderFill(val) {
     const pct = Math.min(val / MAX_SLIDE * 100, 100);
-    slider.style.setProperty('--fill', pct + '%');
+    calcSlider.style.setProperty('--fill', pct + '%');
   }
 
-  /* ── RENDER ── */
-  function render(budget, animate = true) {
+  function calcRender(budget, animate = true) {
     const { fee, rows, minApplied } = compute(budget);
     const effRate = budget > 0 ? fee / budget : 0;
 
-    elMinNotice.classList.toggle('show', minApplied);
+    calcElMin.classList.toggle('show', minApplied);
 
     /* bracket rows */
     const newActive = new Set();
-    elBrackets.innerHTML = '';
+    calcElBrackets.innerHTML = '';
     rows.forEach((row, i) => {
       if (row.active) newActive.add(i);
       const el = document.createElement('div');
-      el.className = 'tr ' + (row.active ? 'active' : 'inactive');
+      el.className = 'calc-tr ' + (row.active ? 'active' : 'inactive');
       el.innerHTML = `
-        <span class="t-lbl">${row.label}</span>
-        <span class="t-rate">${fmtPct(row.rate)}</span>
-        <span class="t-base">${row.base > 0 ? fmt(row.base) : '—'}</span>
-        <span class="t-fee">${row.fee  > 0 ? fmt(row.fee)  : '—'}</span>
+        <span class="calc-t-lbl">${row.label}</span>
+        <span class="calc-t-rate">${fmtPct(row.rate)}</span>
+        <span class="calc-t-base">${row.base > 0 ? fmt(row.base) : '—'}</span>
+        <span class="calc-t-fee">${row.fee  > 0 ? fmt(row.fee)  : '—'}</span>
       `;
-      elBrackets.appendChild(el);
+      calcElBrackets.appendChild(el);
 
-      if (row.active && !prevActive.has(i) && animate && !isFirstRender) {
-        const rgb = accentRGB();
+      if (row.active && !calcPrevActive.has(i) && animate && !calcIsFirstRender) {
         gsap.fromTo(el,
-          { x: -8, opacity: 0, backgroundColor: `rgba(${rgb},.18)` },
-          { x:  0, opacity: 1, backgroundColor: `rgba(${rgb},.045)`,
-            duration: 0.38, ease: 'power3.out',
-            onComplete: () => { el.style.backgroundColor = ''; }
-          }
+          { x: -8, opacity: 0 },
+          { x:  0, opacity: 1, duration: 0.35, ease: 'power3.out' }
         );
       }
     });
-    prevActive    = newActive;
-    isFirstRender = false;
+    calcPrevActive    = newActive;
+    calcIsFirstRender = false;
 
-    /* non-animated path */
     if (!animate) {
-      C.fee = fee; C.effRate = effRate; C.client = budget + fee;
+      CC.fee = fee; CC.effRate = effRate; CC.client = budget + fee;
       if (budget > 0) {
-        elFee.textContent    = fmt(fee);
-        elRate.textContent   = fmtPct(effRate);
-        elClient.textContent = fmt(budget + fee);
-        elBarPct.textContent = fmtPct(effRate);
+        calcElFee.textContent    = fmt(fee);
+        calcElRate.textContent   = fmtPct(effRate);
+        calcElClient.textContent = fmt(budget + fee);
+        calcElBarPct.textContent = fmtPct(effRate);
       } else {
-        elFee.textContent = elRate.textContent =
-          elClient.textContent = elBarPct.textContent = '—';
+        calcElFee.textContent = calcElRate.textContent =
+          calcElClient.textContent = calcElBarPct.textContent = '—';
       }
-      elBarFill.style.width =
+      calcElBarFill.style.width =
         (budget > 0 ? Math.max(0, Math.min((effRate - .08) / .10 * 100, 100)) : 0) + '%';
       return;
     }
 
-    /* budget = 0, animated */
     if (budget === 0) {
-      gsap.to(C, {
+      gsap.to(CC, {
         fee: 0, effRate: 0, client: 0,
         duration: 0.4, ease: 'power2.out', overwrite: 'auto',
         onUpdate() {
-          elFee.textContent    = C.fee    > 1 ? fmt(Math.round(C.fee))    : '—';
-          elRate.textContent   = C.effRate > 0 ? fmtPct(C.effRate)         : '—';
-          elClient.textContent = C.client  > 1 ? fmt(Math.round(C.client)) : '—';
-          elBarPct.textContent = C.effRate > 0 ? fmtPct(C.effRate)         : '—';
+          calcElFee.textContent    = CC.fee    > 1 ? fmt(Math.round(CC.fee))    : '—';
+          calcElRate.textContent   = CC.effRate > 0 ? fmtPct(CC.effRate)         : '—';
+          calcElClient.textContent = CC.client  > 1 ? fmt(Math.round(CC.client)) : '—';
+          calcElBarPct.textContent = CC.effRate > 0 ? fmtPct(CC.effRate)         : '—';
         }
       });
-      gsap.to(elBarFill, { width: '0%', duration: 0.5, ease: 'power2.out', overwrite: 'auto' });
+      gsap.to(calcElBarFill, { width: '0%', duration: 0.5, ease: 'power2.out', overwrite: 'auto' });
       return;
     }
 
-    /* fee card flash */
-    const rgb = accentRGB();
-    gsap.fromTo(elFeeCard,
-      { boxShadow: `0 0 0 1px rgba(${rgb},.7), 0 0 40px rgba(${rgb},.35)` },
-      { boxShadow: `0 0 0 1px rgba(${rgb},.35), 0 4px 24px rgba(${rgb},.18)`,
-        duration: 0.7, ease: 'power2.out', overwrite: 'auto',
-        onComplete: () => { elFeeCard.style.boxShadow = ''; }
-      }
-    );
-
     /* rolling counters */
-    gsap.to(C, {
+    gsap.to(CC, {
       fee, effRate, client: budget + fee,
       duration: 0.5, ease: 'power2.out', overwrite: 'auto',
       onUpdate() {
-        elFee.textContent    = fmt(Math.round(C.fee));
-        elRate.textContent   = fmtPct(C.effRate);
-        elClient.textContent = fmt(Math.round(C.client));
-        elBarPct.textContent = fmtPct(C.effRate);
+        calcElFee.textContent    = fmt(Math.round(CC.fee));
+        calcElRate.textContent   = fmtPct(CC.effRate);
+        calcElClient.textContent = fmt(Math.round(CC.client));
+        calcElBarPct.textContent = fmtPct(CC.effRate);
       }
     });
 
-    /* bar fill */
     const barW = Math.max(0, Math.min((effRate - .08) / .10 * 100, 100));
-    gsap.to(elBarFill, { width: barW + '%', duration: 0.55, ease: 'power2.out', overwrite: 'auto' });
+    gsap.to(calcElBarFill, { width: barW + '%', duration: 0.55, ease: 'power2.out', overwrite: 'auto' });
   }
 
-  /* ── THEME SWITCH ── */
-  function switchTheme(theme) {
-    document.body.classList.remove('theme-warm', 'theme-blue');
-    document.body.classList.add(theme);
-
-    document.querySelectorAll('.swatch').forEach(s =>
-      s.classList.toggle('active', s.dataset.theme === theme)
-    );
-
-    /* re-apply slider fill so var(--accent) resolves to new color */
-    updateSliderFill(parseInt(input.value) || 0);
-    /* release any GSAP-held box-shadow so CSS variables take over */
-    elFeeCard.style.boxShadow = '';
-
-    /* brief scale-pulse on the wrap */
-    gsap.fromTo('#wrap',
-      { opacity: 0.87, scale: 0.997 },
-      { opacity: 1,    scale: 1, duration: 0.4, ease: 'power2.out' }
-    );
-  }
-
-  /* ── PAGE LOAD ── */
+  /* ── Page load ── */
   window.addEventListener('DOMContentLoaded', () => {
-    gsap.set('#wrap', { opacity: 1 });
+    const page = document.getElementById('calcPage');
+    gsap.set(page, { opacity: 0 });
 
-    /* split title into word-spans for clip reveal */
-    const h1    = document.getElementById('mainTitle');
+    /* Split title for word reveal */
+    const h1 = document.getElementById('calcTitle');
     const words = h1.textContent.trim().split(/\s+/);
     h1.innerHTML = words.map(w =>
       `<span style="display:inline-block;overflow:hidden;vertical-align:bottom">` +
@@ -1482,283 +1170,234 @@
     ).join(' ');
     const wordSpans = h1.querySelectorAll('span > span');
 
-    /*
-     * PRE-HIDE all animated elements synchronously before any paint.
-     * We use gsap.set() + gsap.to() instead of gsap.from(), because
-     * gsap.from() inside a timeline applies the "from" state immediately
-     * at registration time (not at the tween's position), causing elements
-     * to flash visible then disappear.
-     */
-    gsap.set('.brand',   { opacity: 0, y: 6 });
-    gsap.set(wordSpans,  { y: '100%' });
-    gsap.set('.swatches',{ opacity: 0, y: 5 });
-    gsap.set(['#budgetCard','#resultsRow','#tableCard','#rateCard'],
-             { opacity: 0, y: 20 });
+    gsap.set(wordSpans, { y: '100%' });
+    gsap.set('.calc-brand', { opacity: 0, y: 6 });
+    gsap.set('.calc-section', { opacity: 0, y: 20 });
 
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    tl.set(page, { opacity: 1 });
+    tl.to(wordSpans, { y: 0, duration: 0.55, stagger: 0.08 }, 0.1);
+    tl.to('.calc-brand', { y: 0, opacity: 1, duration: 0.4 }, 0.3);
+    tl.to('.calc-section', { y: 0, opacity: 1, duration: 0.5, stagger: 0.09 }, 0.45);
 
-    tl.to('.brand',    { y: 0, opacity: 1, duration: 0.4  }, 0.05);
-    tl.to(wordSpans,   { y: 0, opacity: 1, duration: 0.55, stagger: 0.08 }, 0.1);
-    tl.to('.swatches', { y: 0, opacity: 1, duration: 0.3  }, 0.46);
-    tl.from('.hdr',    { borderBottomColor: 'transparent', duration: 0.45 }, 0.36);
-    tl.to(['#budgetCard','#resultsRow','#tableCard','#rateCard'], {
-      y: 0, opacity: 1, duration: 0.5, stagger: 0.09
-    }, 0.52);
-
-    /* animate to initial value once cards are visible */
     tl.call(() => {
-      input.value  = INIT_VAL;
-      slider.value = INIT_VAL;
-      updateSliderFill(INIT_VAL);
-      render(INIT_VAL, true);
-    }, null, 1.05);
+      calcInput.value  = INIT_VAL;
+      calcSlider.value = INIT_VAL;
+      calcUpdateSliderFill(INIT_VAL);
+      calcRender(INIT_VAL, true);
+    }, null, 1.0);
 
-    updateSliderFill(0);
-    render(0, false);
-
-    /* swatch listeners */
-    document.querySelectorAll('.swatch').forEach(s =>
-      s.addEventListener('click', () => switchTheme(s.dataset.theme))
-    );
+    calcUpdateSliderFill(0);
+    calcRender(0, false);
   });
 
-  /* ── INPUT EVENTS ── */
-  slider.addEventListener('input', () => {
-    const val = parseInt(slider.value);
-    input.value = val;
-    updateSliderFill(val);
-    render(val);
+  /* ── Input events ── */
+  calcSlider.addEventListener('input', () => {
+    const val = parseInt(calcSlider.value);
+    calcInput.value = val;
+    calcUpdateSliderFill(val);
+    calcRender(val);
   });
 
-  input.addEventListener('input', () => {
-    const val = Math.max(0, parseInt(input.value) || 0);
-    slider.value = Math.min(val, MAX_SLIDE);
-    updateSliderFill(Math.min(val, MAX_SLIDE));
-    render(val);
+  calcInput.addEventListener('input', () => {
+    const val = Math.max(0, parseInt(calcInput.value) || 0);
+    calcSlider.value = Math.min(val, MAX_SLIDE);
+    calcUpdateSliderFill(Math.min(val, MAX_SLIDE));
+    calcRender(val);
   });
 
-  input.addEventListener('blur', () => {
-    if (input.value === '' || isNaN(parseInt(input.value))) {
-      input.value = 0; slider.value = 0;
-      updateSliderFill(0); render(0);
+  calcInput.addEventListener('blur', () => {
+    if (calcInput.value === '' || isNaN(parseInt(calcInput.value))) {
+      calcInput.value = 0; calcSlider.value = 0;
+      calcUpdateSliderFill(0); calcRender(0);
     }
   });
 
   /* ══════════════════════════════════════
-     V2 — DOM REFS
+     OLD DESIGN (Easter egg)
   ══════════════════════════════════════ */
-  const v2Input       = document.getElementById('v2BudgetInput');
-  const v2Slider      = document.getElementById('v2Slider');
-  const v2ElFee       = document.getElementById('v2Fee');
-  const v2ElRate      = document.getElementById('v2Rate');
-  const v2ElClient    = document.getElementById('v2Client');
-  const v2ElBarFill   = document.getElementById('v2BarFill');
-  const v2ElBarPct    = document.getElementById('v2BarPct');
-  const v2ElBrackets  = document.getElementById('v2Brackets');
-  const v2ElMinNotice = document.getElementById('v2MinNotice');
-  const v2ElFeeCard   = document.getElementById('v2FeeCard');
+  const oldSlider     = document.getElementById('oldSlider');
+  const oldInput      = document.getElementById('oldInput');
+  const oldElFee      = document.getElementById('oldFee');
+  const oldElRate     = document.getElementById('oldRate');
+  const oldElClient   = document.getElementById('oldClient');
+  const oldElBarFill  = document.getElementById('oldBarFill');
+  const oldElBarPct   = document.getElementById('oldBarPct');
+  const oldElBrackets = document.getElementById('oldBrackets');
+  const oldElMin      = document.getElementById('oldMinNotice');
+  const oldElFeeCard  = document.getElementById('oldFeeCard');
 
-  /* ── V2 State ── */
-  const C2 = { fee: 0, effRate: 0, client: 0 };
-  let v2PrevActive    = new Set();
-  let v2IsFirstRender = true;
+  const OC = { fee: 0, effRate: 0, client: 0 };
+  let oldPrevActive = new Set();
+  let oldIsFirstRender = true;
 
-  /* ── V2 Slider fill ── */
-  function v2UpdateSliderFill(val) {
+  function oldUpdateSliderFill(val) {
     const pct = Math.min(val / MAX_SLIDE * 100, 100);
-    v2Slider.style.background =
-      `linear-gradient(to right, #3b6ef5 ${pct}%, #ccd8ed ${pct}%)`;
+    oldSlider.style.setProperty('--fill', pct + '%');
   }
 
-  /* ── V2 Render ── */
-  function v2Render(budget, animate = true) {
+  function oldRender(budget, animate = true) {
     const { fee, rows, minApplied } = compute(budget);
     const effRate = budget > 0 ? fee / budget : 0;
 
-    v2ElMinNotice.classList.toggle('show', minApplied);
+    oldElMin.classList.toggle('show', minApplied);
 
-    /* bracket rows */
     const newActive = new Set();
-    v2ElBrackets.innerHTML = '';
+    oldElBrackets.innerHTML = '';
     rows.forEach((row, i) => {
       if (row.active) newActive.add(i);
       const el = document.createElement('div');
-      el.className = 'v2-tr ' + (row.active ? 'active' : 'inactive');
+      el.className = 'old-tr ' + (row.active ? 'active' : 'inactive');
       el.innerHTML = `
-        <span class="v2-t-lbl">${row.label}</span>
-        <span class="v2-t-rate">${fmtPct(row.rate)}</span>
-        <span class="v2-t-base">${row.base > 0 ? fmt(row.base) : '—'}</span>
-        <span class="v2-t-fee">${row.fee  > 0 ? fmt(row.fee)  : '—'}</span>
+        <span class="old-t-lbl">${row.label}</span>
+        <span class="old-t-rate">${fmtPct(row.rate)}</span>
+        <span class="old-t-base">${row.base > 0 ? fmt(row.base) : '—'}</span>
+        <span class="old-t-fee">${row.fee  > 0 ? fmt(row.fee)  : '—'}</span>
       `;
-      v2ElBrackets.appendChild(el);
+      oldElBrackets.appendChild(el);
 
-      if (row.active && !v2PrevActive.has(i) && animate && !v2IsFirstRender) {
-        /* Motion.js for bracket row entrance */
-        const { animate: ma } = window.Motion || {};
-        if (ma) ma(el, { opacity: [0, 1], x: [-10, 0] }, { duration: 0.35, easing: 'easeOut' });
-      }
-    });
-    v2PrevActive    = newActive;
-    v2IsFirstRender = false;
-
-    /* non-animated path */
-    if (!animate) {
-      C2.fee = fee; C2.effRate = effRate; C2.client = budget + fee;
-      if (budget > 0) {
-        v2ElFee.textContent    = fmt(fee);
-        v2ElRate.textContent   = fmtPct(effRate);
-        v2ElClient.textContent = fmt(budget + fee);
-        v2ElBarPct.textContent = fmtPct(effRate);
-      } else {
-        v2ElFee.textContent = v2ElRate.textContent =
-          v2ElClient.textContent = v2ElBarPct.textContent = '—';
-      }
-      v2ElBarFill.style.width =
-        (budget > 0 ? Math.max(0, Math.min((effRate - .08) / .10 * 100, 100)) : 0) + '%';
-      return;
-    }
-
-    /* budget = 0 */
-    if (budget === 0) {
-      gsap.to(C2, {
-        fee: 0, effRate: 0, client: 0,
-        duration: 0.4, ease: 'power2.out', overwrite: 'auto',
-        onUpdate() {
-          v2ElFee.textContent    = C2.fee    > 1 ? fmt(Math.round(C2.fee))    : '—';
-          v2ElRate.textContent   = C2.effRate > 0 ? fmtPct(C2.effRate)        : '—';
-          v2ElClient.textContent = C2.client  > 1 ? fmt(Math.round(C2.client)): '—';
-          v2ElBarPct.textContent = C2.effRate > 0 ? fmtPct(C2.effRate)        : '—';
-        }
-      });
-      gsap.to(v2ElBarFill, { width: '0%', duration: 0.5, ease: 'power2.out', overwrite: 'auto' });
-      return;
-    }
-
-    /* fee card glow — Motion.js (opacity pulse on the val element) */
-    const { animate: ma } = window.Motion || {};
-    if (ma) {
-      ma(v2ElFee,
-        { opacity: [0.55, 1] },
-        { duration: 0.55, easing: 'easeOut' }
-      );
-    }
-
-    /* rolling counters (GSAP) */
-    gsap.to(C2, {
-      fee, effRate, client: budget + fee,
-      duration: 0.5, ease: 'power2.out', overwrite: 'auto',
-      onUpdate() {
-        v2ElFee.textContent    = fmt(Math.round(C2.fee));
-        v2ElRate.textContent   = fmtPct(C2.effRate);
-        v2ElClient.textContent = fmt(Math.round(C2.client));
-        v2ElBarPct.textContent = fmtPct(C2.effRate);
-      }
-    });
-
-    const barW = Math.max(0, Math.min((effRate - .08) / .10 * 100, 100));
-    gsap.to(v2ElBarFill, { width: barW + '%', duration: 0.55, ease: 'power2.out', overwrite: 'auto' });
-  }
-
-  /* ── V2 Input events ── */
-  v2Slider.addEventListener('input', () => {
-    const val = parseInt(v2Slider.value);
-    v2Input.value = val;
-    v2UpdateSliderFill(val);
-    v2Render(val);
-  });
-
-  v2Input.addEventListener('input', () => {
-    const val = Math.max(0, parseInt(v2Input.value) || 0);
-    v2Slider.value = Math.min(val, MAX_SLIDE);
-    v2UpdateSliderFill(Math.min(val, MAX_SLIDE));
-    v2Render(val);
-  });
-
-  v2Input.addEventListener('blur', () => {
-    if (v2Input.value === '' || isNaN(parseInt(v2Input.value))) {
-      v2Input.value = 0; v2Slider.value = 0;
-      v2UpdateSliderFill(0); v2Render(0);
-    }
-  });
-
-  /* ══════════════════════════════════════
-     TRANSITIONS  (GSAP page switch · Motion.js stagger)
-  ══════════════════════════════════════ */
-  function switchToV2() {
-    const wrap = document.getElementById('wrap');
-    const v2el = document.getElementById('v2');
-
-    gsap.to(wrap, {
-      opacity: 0, scale: 0.97, filter: 'blur(7px)',
-      duration: 0.32, ease: 'power2.in',
-      onComplete() {
-        gsap.set(wrap, { clearProps: 'all' });
-        wrap.style.display = 'none';
-
-        /* Show v2 */
-        v2el.style.display = 'block';
-        gsap.set(v2el, { opacity: 0 });
-        gsap.to(v2el, { opacity: 1, duration: 0.18, ease: 'none' });
-
-        /* Sync to current v1 budget */
-        const budget = parseInt(input.value) || INIT_VAL;
-        v2Input.value  = budget;
-        v2Slider.value = Math.min(budget, MAX_SLIDE);
-        v2UpdateSliderFill(Math.min(budget, MAX_SLIDE));
-        v2IsFirstRender = true;
-        v2PrevActive = new Set();
-        v2Render(budget, false);
-
-        /* Stagger sections — Motion.js */
-        if (window.Motion) {
-          const { animate: ma, stagger } = window.Motion;
-          const sections = Array.from(v2el.querySelectorAll('.v2-section'));
-          ma(sections,
-            { opacity: [0, 1], y: [26, 0] },
-            { delay: stagger(0.075), duration: 0.48,
-              easing: [0.25, 0.46, 0.45, 0.94] }
-          );
-        } else {
-          /* fallback without Motion */
-          gsap.fromTo('#v2 .v2-section',
-            { opacity: 0, y: 22 },
-            { opacity: 1, y: 0, duration: 0.48, stagger: 0.075, ease: 'power3.out' }
-          );
-        }
-      }
-    });
-  }
-
-  function switchToV1() {
-    const wrap = document.getElementById('wrap');
-    const v2el = document.getElementById('v2');
-
-    gsap.to(v2el, {
-      opacity: 0, scale: 0.98,
-      duration: 0.28, ease: 'power2.in',
-      onComplete() {
-        gsap.set(v2el, { clearProps: 'all' });
-        /* reset section opacity/transform for next open */
-        v2el.querySelectorAll('.v2-section').forEach(s => {
-          s.style.opacity = '';
-          s.style.transform = '';
-        });
-        v2el.style.display = 'none';
-
-        wrap.style.display = 'flex';
-        gsap.fromTo(wrap,
-          { opacity: 0, scale: 0.97, filter: 'blur(7px)' },
-          { opacity: 1, scale: 1, filter: 'blur(0px)',
-            duration: 0.4, ease: 'power2.out',
-            onComplete() { gsap.set(wrap, { clearProps: 'filter' }); }
+      if (row.active && !oldPrevActive.has(i) && animate && !oldIsFirstRender) {
+        gsap.fromTo(el,
+          { x: -8, opacity: 0, backgroundColor: 'rgba(59,110,245,0.18)' },
+          { x:  0, opacity: 1, backgroundColor: 'rgba(59,110,245,0.045)',
+            duration: 0.38, ease: 'power3.out',
+            onComplete: () => { el.style.backgroundColor = ''; }
           }
         );
       }
     });
+    oldPrevActive    = newActive;
+    oldIsFirstRender = false;
+
+    if (!animate) {
+      OC.fee = fee; OC.effRate = effRate; OC.client = budget + fee;
+      if (budget > 0) {
+        oldElFee.textContent    = fmt(fee);
+        oldElRate.textContent   = fmtPct(effRate);
+        oldElClient.textContent = fmt(budget + fee);
+        oldElBarPct.textContent = fmtPct(effRate);
+      } else {
+        oldElFee.textContent = oldElRate.textContent =
+          oldElClient.textContent = oldElBarPct.textContent = '—';
+      }
+      oldElBarFill.style.width =
+        (budget > 0 ? Math.max(0, Math.min((effRate - .08) / .10 * 100, 100)) : 0) + '%';
+      return;
+    }
+
+    if (budget === 0) {
+      gsap.to(OC, {
+        fee: 0, effRate: 0, client: 0,
+        duration: 0.4, ease: 'power2.out', overwrite: 'auto',
+        onUpdate() {
+          oldElFee.textContent    = OC.fee    > 1 ? fmt(Math.round(OC.fee))    : '—';
+          oldElRate.textContent   = OC.effRate > 0 ? fmtPct(OC.effRate)         : '—';
+          oldElClient.textContent = OC.client  > 1 ? fmt(Math.round(OC.client)) : '—';
+          oldElBarPct.textContent = OC.effRate > 0 ? fmtPct(OC.effRate)         : '—';
+        }
+      });
+      gsap.to(oldElBarFill, { width: '0%', duration: 0.5, ease: 'power2.out', overwrite: 'auto' });
+      return;
+    }
+
+    gsap.fromTo(oldElFeeCard,
+      { boxShadow: '0 0 0 1px rgba(59,110,245,0.7), 0 0 40px rgba(59,110,245,0.35)' },
+      { boxShadow: '0 0 0 1px rgba(59,110,245,0.35), 0 4px 24px rgba(59,110,245,0.18)',
+        duration: 0.7, ease: 'power2.out', overwrite: 'auto',
+        onComplete: () => { oldElFeeCard.style.boxShadow = ''; }
+      }
+    );
+
+    gsap.to(OC, {
+      fee, effRate, client: budget + fee,
+      duration: 0.5, ease: 'power2.out', overwrite: 'auto',
+      onUpdate() {
+        oldElFee.textContent    = fmt(Math.round(OC.fee));
+        oldElRate.textContent   = fmtPct(OC.effRate);
+        oldElClient.textContent = fmt(Math.round(OC.client));
+        oldElBarPct.textContent = fmtPct(OC.effRate);
+      }
+    });
+
+    const barW = Math.max(0, Math.min((effRate - .08) / .10 * 100, 100));
+    gsap.to(oldElBarFill, { width: barW + '%', duration: 0.55, ease: 'power2.out', overwrite: 'auto' });
   }
 
-  document.getElementById('switchDesign').addEventListener('click', switchToV2);
-  document.getElementById('v2Back').addEventListener('click', switchToV1);
+  /* Old slider events */
+  oldSlider.addEventListener('input', () => {
+    const val = parseInt(oldSlider.value);
+    oldInput.value = val;
+    oldUpdateSliderFill(val);
+    oldRender(val);
+  });
+
+  oldInput.addEventListener('input', () => {
+    const val = Math.max(0, parseInt(oldInput.value) || 0);
+    oldSlider.value = Math.min(val, MAX_SLIDE);
+    oldUpdateSliderFill(Math.min(val, MAX_SLIDE));
+    oldRender(val);
+  });
+
+  oldInput.addEventListener('blur', () => {
+    if (oldInput.value === '' || isNaN(parseInt(oldInput.value))) {
+      oldInput.value = 0; oldSlider.value = 0;
+      oldUpdateSliderFill(0); oldRender(0);
+    }
+  });
+
+  /* ══════════════════════════════════════
+     KONAMI CODE: ↑↑↓↓←→←→BA
+  ══════════════════════════════════════ */
+  const KONAMI = [38,38,40,40,37,39,37,39,66,65];
+  let konamiPos = 0;
+
+  function showOldDesign() {
+    document.body.classList.add('old-design-active');
+    const oldEl = document.getElementById('oldDesign');
+    oldEl.classList.add('active');
+
+    /* Sync budget from main */
+    const budget = parseInt(calcInput.value) || INIT_VAL;
+    oldInput.value  = budget;
+    oldSlider.value = Math.min(budget, MAX_SLIDE);
+    oldUpdateSliderFill(Math.min(budget, MAX_SLIDE));
+    oldIsFirstRender = true;
+    oldPrevActive = new Set();
+    oldRender(budget, false);
+
+    /* Animate in */
+    gsap.fromTo(oldEl, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: 'power2.out' });
+    gsap.fromTo('.old-wrap', { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, delay: 0.15, ease: 'power3.out' });
+  }
+
+  function hideOldDesign() {
+    const oldEl = document.getElementById('oldDesign');
+    gsap.to(oldEl, {
+      opacity: 0, duration: 0.3, ease: 'power2.in',
+      onComplete() {
+        oldEl.classList.remove('active');
+        document.body.classList.remove('old-design-active');
+      }
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.keyCode === KONAMI[konamiPos]) {
+      konamiPos++;
+      if (konamiPos === KONAMI.length) {
+        konamiPos = 0;
+        if (document.getElementById('oldDesign').classList.contains('active')) {
+          hideOldDesign();
+        } else {
+          showOldDesign();
+        }
+      }
+    } else {
+      konamiPos = 0;
+    }
+  });
+
+  document.getElementById('oldCloseBtn').addEventListener('click', hideOldDesign);
 </script>
 </body>
 </html>

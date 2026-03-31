@@ -10,11 +10,19 @@ A single-file, static fee calculator for Google Ads media budgets, built for Moo
 
 ## Architecture
 
-Everything lives in a single file: `rate_calculator.html`. It contains embedded CSS (`<style>`) and JavaScript (`<script>`), with no external dependencies beyond Google Fonts.
+Everything lives in a single file: `rate_calculator.html`. It contains embedded CSS (`<style>`) and JavaScript (`<script>`). The main design uses the shared Moonshot design system (`../main-design-system/` — tokens.css, base.css, components.css) and GSAP for animations.
+
+### Easter Egg
+
+The previous design (blue theme, rounded corners, Syne/Space Mono/JetBrains Mono fonts) is hidden as an easter egg, accessible via the Konami code (↑↑↓↓←→←→BA). It is fully self-contained within `#oldDesign` with scoped styles.
+
+### Studio (V2)
+
+The Studio design variant has been disabled/removed.
 
 ### Pricing Logic (`compute(budget)`)
 
-Tiered progressive fee model with a 800€ minimum:
+Tiered progressive fee model with a 1 000€ minimum:
 
 | Budget bracket | Rate |
 |---|---|
