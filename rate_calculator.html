@@ -4,14 +4,48 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calculateur d'Honoraires · Moonshot Growth</title>
-<link rel="stylesheet" href="../main-design-system/tokens.css">
-<link rel="stylesheet" href="../main-design-system/base.css">
-<link rel="stylesheet" href="../main-design-system/components.css">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <style>
 /* ══════════════════════════════════════
-   RATE CALCULATOR — MOONSHOT DESIGN SYSTEM
-   Project-specific overrides
+   DESIGN TOKENS (from main-design-system)
+══════════════════════════════════════ */
+:root {
+  --scarlet:      #E63946;
+  --saffron:      #F4A261;
+  --blue:         #457B9D;
+  --emerald:      #2A9D8F;
+  --navy:         #1A2544;
+  --navy-deep:    #111C35;
+  --cream:        #FAF8F4;
+  --white:        #FFFFFF;
+  --text:         #1A2544;
+  --text-muted:   #6B7694;
+  --border:       #E2DDD8;
+  --font:         'Manrope', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  --nav-h:        68px;
+  --container-max: 1200px;
+  --container-pad: 32px;
+  --ease-motion:  cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ══════════════════════════════════════
+   BASE (from main-design-system)
+══════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--cream);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+a { color: inherit; text-decoration: none; }
+
+/* ══════════════════════════════════════
+   RATE CALCULATOR — Project-specific
 ══════════════════════════════════════ */
 
 /* Override base html font for this tool */
