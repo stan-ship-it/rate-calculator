@@ -282,29 +282,6 @@ body {
   color: var(--text-muted);
 }
 
-/* ── Min notice ── */
-.calc-min-notice {
-  display: none;
-  align-items: center;
-  gap: 7px;
-  margin-top: 14px;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  color: var(--text-muted);
-}
-.calc-min-notice.show { display: flex; }
-
-.calc-min-badge {
-  background: rgba(230,57,70,0.08);
-  color: var(--scarlet);
-  border: 1px solid rgba(230,57,70,0.25);
-  padding: 2px 6px;
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-}
-
 /* ── Results ── */
 .calc-results {
   display: grid;
@@ -344,6 +321,18 @@ body {
   color: var(--scarlet);
 }
 
+.calc-metric--rate {
+  border-top: 3px solid var(--blue);
+}
+.calc-metric--rate .calc-metric-lbl { color: var(--blue); }
+.calc-metric--rate .calc-metric-val { color: var(--blue); }
+
+.calc-metric--total {
+  border-top: 3px solid var(--emerald);
+}
+.calc-metric--total .calc-metric-lbl { color: var(--emerald); }
+.calc-metric--total .calc-metric-val { color: var(--emerald); }
+
 /* ── Gauge bar ── */
 .calc-gauge-top {
   display: flex;
@@ -362,7 +351,7 @@ body {
 .calc-gauge-pct {
   font-family: var(--font-mono);
   font-size: 22px;
-  color: var(--scarlet);
+  color: var(--blue);
   letter-spacing: -0.02em;
 }
 
@@ -375,7 +364,7 @@ body {
 .calc-gauge-fill {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, #cc2f3b 0%, var(--scarlet) 55%, #F4A261 100%);
+  background: linear-gradient(90deg, var(--emerald) 0%, var(--blue) 35%, var(--saffron) 70%, var(--scarlet) 100%);
   position: relative;
   overflow: hidden;
 }
@@ -441,6 +430,11 @@ body {
   height: 20px;
   background: var(--scarlet);
 }
+.calc-tr.active:nth-child(1)::before { background: var(--saffron); }
+.calc-tr.active:nth-child(2)::before { background: var(--scarlet); }
+.calc-tr.active:nth-child(3)::before { background: var(--blue); }
+.calc-tr.active:nth-child(4)::before { background: var(--emerald); }
+.calc-tr.active:nth-child(5)::before { background: var(--navy); }
 
 .calc-t-lbl {
   font-family: var(--font-mono);
@@ -455,6 +449,12 @@ body {
 .calc-t-rate { text-align: center; }
 .calc-t-base, .calc-t-fee { text-align: right; }
 .calc-tr.active .calc-t-rate { color: var(--scarlet); }
+.calc-tr.active:nth-child(1) .calc-t-rate { color: var(--saffron); }
+.calc-tr.active:nth-child(2) .calc-t-rate { color: var(--scarlet); }
+.calc-tr.active:nth-child(3) .calc-t-rate { color: var(--blue); }
+.calc-tr.active:nth-child(4) .calc-t-rate { color: var(--emerald); }
+.calc-tr.active:nth-child(5) .calc-t-rate { color: var(--navy); }
+.calc-t-rate--flat { font-weight: 600; font-size: 0.65rem; letter-spacing: 0.06em; }
 .calc-tr.active .calc-t-fee  { color: var(--navy); font-weight: 500; }
 
 /* ── Velocity bars divider ── */
@@ -744,19 +744,6 @@ body.old-design-active .old-close-btn { display: flex; }
   font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--old-text-dim);
 }
 
-#oldDesign .old-min-notice {
-  display: none; align-items: center; gap: 7px; margin-top: 12px;
-  font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--old-text-mid);
-}
-#oldDesign .old-min-notice.show { display: flex; }
-#oldDesign .old-min-badge {
-  background: rgba(var(--old-accent-rgb),0.12);
-  color: var(--old-accent);
-  border: 1px solid rgba(var(--old-accent-rgb),0.3);
-  border-radius: 4px; padding: 2px 6px;
-  font-size: 15px; font-weight: 700; letter-spacing: 0.07em;
-}
-
 /* Old results */
 #oldDesign .old-results { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
 #oldDesign .old-res-card {
@@ -915,10 +902,6 @@ body.old-design-active .old-close-btn { display: flex; }
     <div class="calc-range-labels">
       <span>0 €</span><span>50 k€</span><span>100 k€</span><span>150 k€</span>
     </div>
-    <div class="calc-min-notice" id="calcMinNotice">
-      <span class="calc-min-badge">MIN</span>
-      Forfait minimum de 1 000 € appliqué
-    </div>
   </section>
 
   <!-- Results -->
@@ -928,11 +911,11 @@ body.old-design-active .old-close-btn { display: flex; }
         <div class="calc-metric-lbl">Honoraires HT</div>
         <div class="calc-metric-val" id="calcFee">—</div>
       </div>
-      <div class="calc-metric">
+      <div class="calc-metric calc-metric--rate">
         <div class="calc-metric-lbl">Taux effectif</div>
         <div class="calc-metric-val" id="calcRate">—</div>
       </div>
-      <div class="calc-metric">
+      <div class="calc-metric calc-metric--total">
         <div class="calc-metric-lbl">Total client</div>
         <div class="calc-metric-val" id="calcClient">—</div>
       </div>
@@ -1007,10 +990,6 @@ body.old-design-active .old-close-btn { display: flex; }
       <div class="old-range-labels">
         <span>0 €</span><span>50 k€</span><span>100 k€</span><span>150 k€</span>
       </div>
-      <div class="old-min-notice" id="oldMinNotice">
-        <span class="old-min-badge">MIN</span>
-        Forfait minimum de 1 000 € appliqué
-      </div>
     </div>
 
     <div class="old-results">
@@ -1059,14 +1038,15 @@ body.old-design-active .old-close-btn { display: flex; }
   /* ══════════════════════════════════════
      SHARED CONSTANTS & HELPERS
   ══════════════════════════════════════ */
+  const FLAT_FEE   = 1000;
+  const FLAT_CAP   = 5000;
   const BRACKETS = [
-    { min: 0,      max: 5000,    rate: 0.18, label: "0 → 5 000 €" },
-    { min: 5000,   max: 20000,   rate: 0.15, label: "5 001 → 20 000 €" },
-    { min: 20000,  max: 50000,   rate: 0.12, label: "20 001 → 50 000 €" },
-    { min: 50000,  max: 100000,  rate: 0.10, label: "50 001 → 100 000 €" },
-    { min: 100000, max: Infinity, rate: 0.08, label: "> 100 000 €" },
+    { min: 0,      max: 5000,    rate: null, label: "0 → 5 000 €",         flat: true },
+    { min: 5000,   max: 20000,   rate: 0.15, label: "5 001 → 20 000 €",   flat: false },
+    { min: 20000,  max: 50000,   rate: 0.12, label: "20 001 → 50 000 €",  flat: false },
+    { min: 50000,  max: 100000,  rate: 0.10, label: "50 001 → 100 000 €", flat: false },
+    { min: 100000, max: Infinity, rate: 0.08, label: "> 100 000 €",        flat: false },
   ];
-  const MIN_FEE   = 1000;
   const MAX_SLIDE  = 150000;
   const INIT_VAL   = 10000;
 
@@ -1078,15 +1058,20 @@ body.old-design-active .old-close-btn { display: flex; }
     const rows = [];
     for (const b of BRACKETS) {
       if (budget <= b.min) { rows.push({ ...b, base:0, fee:0, active:false }); continue; }
-      const cap  = b.max === Infinity ? budget : b.max;
-      const base = Math.min(budget, cap) - b.min;
-      const bf   = base * b.rate;
-      fee += bf;
-      rows.push({ ...b, base, fee:bf, active:true });
+      if (b.flat) {
+        /* Fixed 1 000 € fee for the first bracket */
+        const base = Math.min(budget, b.max) - b.min;
+        rows.push({ ...b, base, fee: FLAT_FEE, active: true });
+        fee += FLAT_FEE;
+      } else {
+        const cap  = b.max === Infinity ? budget : b.max;
+        const base = Math.min(budget, cap) - b.min;
+        const bf   = base * b.rate;
+        fee += bf;
+        rows.push({ ...b, base, fee: bf, active: true });
+      }
     }
-    const minApplied = budget > 0 && fee < MIN_FEE;
-    fee = Math.max(fee, budget > 0 ? MIN_FEE : 0);
-    return { fee, rows, minApplied };
+    return { fee, rows };
   }
 
   /* ══════════════════════════════════════
@@ -1100,7 +1085,6 @@ body.old-design-active .old-close-btn { display: flex; }
   const calcElBarFill  = document.getElementById('calcBarFill');
   const calcElBarPct   = document.getElementById('calcBarPct');
   const calcElBrackets = document.getElementById('calcBrackets');
-  const calcElMin      = document.getElementById('calcMinNotice');
   const calcElFeeCard  = document.getElementById('calcFeeCard');
 
   const CC = { fee: 0, effRate: 0, client: 0 };
@@ -1113,10 +1097,8 @@ body.old-design-active .old-close-btn { display: flex; }
   }
 
   function calcRender(budget, animate = true) {
-    const { fee, rows, minApplied } = compute(budget);
+    const { fee, rows } = compute(budget);
     const effRate = budget > 0 ? fee / budget : 0;
-
-    calcElMin.classList.toggle('show', minApplied);
 
     /* bracket rows */
     const newActive = new Set();
@@ -1125,9 +1107,10 @@ body.old-design-active .old-close-btn { display: flex; }
       if (row.active) newActive.add(i);
       const el = document.createElement('div');
       el.className = 'calc-tr ' + (row.active ? 'active' : 'inactive');
+      const rateCell = row.flat ? `<span class="calc-t-rate calc-t-rate--flat">Forfait</span>` : `<span class="calc-t-rate">${fmtPct(row.rate)}</span>`;
       el.innerHTML = `
         <span class="calc-t-lbl">${row.label}</span>
-        <span class="calc-t-rate">${fmtPct(row.rate)}</span>
+        ${rateCell}
         <span class="calc-t-base">${row.base > 0 ? fmt(row.base) : '—'}</span>
         <span class="calc-t-fee">${row.fee  > 0 ? fmt(row.fee)  : '—'}</span>
       `;
@@ -1258,7 +1241,6 @@ body.old-design-active .old-close-btn { display: flex; }
   const oldElBarFill  = document.getElementById('oldBarFill');
   const oldElBarPct   = document.getElementById('oldBarPct');
   const oldElBrackets = document.getElementById('oldBrackets');
-  const oldElMin      = document.getElementById('oldMinNotice');
   const oldElFeeCard  = document.getElementById('oldFeeCard');
 
   const OC = { fee: 0, effRate: 0, client: 0 };
@@ -1271,10 +1253,8 @@ body.old-design-active .old-close-btn { display: flex; }
   }
 
   function oldRender(budget, animate = true) {
-    const { fee, rows, minApplied } = compute(budget);
+    const { fee, rows } = compute(budget);
     const effRate = budget > 0 ? fee / budget : 0;
-
-    oldElMin.classList.toggle('show', minApplied);
 
     const newActive = new Set();
     oldElBrackets.innerHTML = '';
@@ -1282,9 +1262,10 @@ body.old-design-active .old-close-btn { display: flex; }
       if (row.active) newActive.add(i);
       const el = document.createElement('div');
       el.className = 'old-tr ' + (row.active ? 'active' : 'inactive');
+      const rateCell = row.flat ? `<span class="old-t-rate" style="font-weight:500;color:var(--old-accent)">Forfait</span>` : `<span class="old-t-rate">${fmtPct(row.rate)}</span>`;
       el.innerHTML = `
         <span class="old-t-lbl">${row.label}</span>
-        <span class="old-t-rate">${fmtPct(row.rate)}</span>
+        ${rateCell}
         <span class="old-t-base">${row.base > 0 ? fmt(row.base) : '—'}</span>
         <span class="old-t-fee">${row.fee  > 0 ? fmt(row.fee)  : '—'}</span>
       `;

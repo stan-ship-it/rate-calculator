@@ -22,15 +22,17 @@ The Studio design variant has been disabled/removed.
 
 ### Pricing Logic (`compute(budget)`)
 
-Tiered progressive fee model with a 1 000€ minimum:
+Fixed base fee + tiered progressive model:
 
 | Budget bracket | Rate |
 |---|---|
-| 0 – 5 000 € | 18% |
+| 0 – 5 000 € | 1 000 € forfait (flat fee) |
 | 5 000 – 20 000 € | 15% |
 | 20 000 – 50 000 € | 12% |
 | 50 000 – 100 000 € | 10% |
 | 100 000 €+ | 8% |
+
+The first 5 000 € always costs a flat 1 000 €. Amounts above 5 000 € are charged at the progressive tiered rates.
 
 `render(budget)` drives all UI updates: the three summary cards (fees HT, effective rate, total client cost), the bracket breakdown table, and the progress bar.
 
